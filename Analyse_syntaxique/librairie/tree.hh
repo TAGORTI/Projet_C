@@ -34,6 +34,16 @@
 #include <queue>
 #include <algorithm>
 #include <cstddef>
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
+#include <list>
+#include "lexeme.h"
+#include <iosfwd>
+
+#include <list>
+
 
 
 /// A node in the tree, combining links to other nodes as well as the actual data.
@@ -44,7 +54,7 @@ class tree_node_ { // size: 5*4=20 bytes (on 32 bit arch), can be reduced by 8.
 		tree_node_(const T&);
 
 		tree_node_<T> *parent;
-	   tree_node_<T> *first_child, *last_child;
+		tree_node_<T> *first_child, *last_child;
 		tree_node_<T> *prev_sibling, *next_sibling;
 		T data;
 }; // __attribute__((packed));
