@@ -4,7 +4,21 @@
 #include <sstream>
 #include <list>
 #include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include "lexeme.h"
 using namespace std;
+
+
+void afficher_liste(const list<lexeme> & l){
+    list<lexeme>::const_iterator
+        lit (l.begin()),
+        lend(l.end());
+
+    for(;lit!=lend;++lit) cout << (*lit).getnom() << ' ' << (*lit).getnature() << ' ' << (*lit).getrole()<< endl;
+   
+}
+
 
 int main()
 
@@ -44,16 +58,17 @@ else if (contenu[i]>= 33 && contenu[i]<= 47 || contenu[i]>= 58 && contenu[i]<= 6
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-  std::list<std::string> mylist;
-  std::list<std::string>::iterator it;
+  list<lexeme> listlexeme;// = creer_liste ;//  list de lexeme
+  list<lexeme>::iterator it;
  
  stringstream ss(inter);
         while (ss >> buf)
-          mylist.push_back(buf);
-        for (it=mylist.begin(); it!=mylist.end(); ++it){           
+          listlexeme.push_back(lexeme(buf));
+          afficher_liste(listlexeme);    
+   /*for (it=mylist.begin(); it!=mylist.end(); ++it){           *
            cout <<*it<<endl;
            //cout <<' '<<*it;           
-        }     
+        }  */   
     
      }
     fichier.close();
