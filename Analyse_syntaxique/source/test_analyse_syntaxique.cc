@@ -9,8 +9,8 @@
 
 
 #include "lexeme.h"
-//#include "analyse_syntaxique.h" //analyse synthaxique
-
+#include "analyse_syntaxique.h" //analyse synthaxique
+#include "tree.hh"
 
 #include <iostream>
 #include <stdio.h>
@@ -18,22 +18,23 @@
 #include <vector>
 #include <list>
 
+#include <iosfwd>
+
+#include <list>
+
+
 using namespace std;
 
-/*	void ajoutlexeme ( lexeme  *a ) {   //au lieu de (lexeme &)
-		this->insert(pair<string,animal*>(a->getnom(),a));
-		cout << "vous avez ajouter " << (*a).getnom() <<endl;
+void afficher_arbre(const tree<lexeme> & arbre){
+    tree<lexeme>::iterator arbre_it (arbre.begin()), arbre_end(arbre.end());
+    for(;arbre_it!=arbre_end;++arbre_it) {
+	cout << (*arbre_it).getnom() << endl;
+
 	}
-*/
-
-
-/*
-std::list<unsigned> creer_liste(const std::size_t & max){
-    std::list<unsigned> l;
-    for(std::size_t i=0;i<=max;++i) l.push_back(i);
-    return l;
 }
-*/
+
+
+
 void afficher_liste(const list<lexeme> & l){
     list<lexeme>::const_iterator
         lit (l.begin()),
@@ -41,14 +42,7 @@ void afficher_liste(const list<lexeme> & l){
     for(;lit!=lend;++lit) cout << (*lit).getnom() << ' ' << (*lit).getnature() << ' ' << (*lit).getrole()<< endl;
     cout << endl;
 }
-/*
-int main(){
-    std::list<unsigned> ma_liste = creer_liste(20);
-    afficher_liste(ma_liste);
-    return 0;
-}
 
-*/
 
 int main() {
 
@@ -95,7 +89,9 @@ cout << (*(listlexeme.begin())).getrole() << endl;
 
 afficher_liste(listlexeme);
 
-//tree<lexeme> arbre = get_arbre_primaire(listlexeme);
+//tree<string> arbre = get_arbre_primaire(listlexeme);
+tree<lexeme> arbre = get_arbre_primaire(listlexeme);
+
 
 }
 /*
