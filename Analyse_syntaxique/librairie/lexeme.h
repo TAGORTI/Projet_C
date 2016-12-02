@@ -31,6 +31,9 @@ public:
 	lexeme(const string & nom):nom(nom),nature("aucun"),role("aucun"){
 	}
 
+	lexeme():nom("aucun"),nature("aucun"),role("aucun"){
+	}
+
 	~lexeme() {}
 
 

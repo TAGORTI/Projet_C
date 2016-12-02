@@ -17,7 +17,12 @@ using namespace std;
 
 //tree<string> get_arbre_primaire(const list<lexeme> & l);
 
-tree<lexeme> get_arbre_primaire(const list<lexeme> & l);
+//tree<lexeme> get_arbre_primaire(const list<lexeme> & l);
 
+//void get_arbre_primaire( list<lexeme>* list, tree<lexeme>*  arbre);
+
+void get_arbre_primaire( list<lexeme> & list, tree<lexeme> & arbre);
+
+//void get_arbre_primaire( list<lexeme> & list, tree<lexeme> & arbre);
 
 #endif
