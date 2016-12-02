@@ -26,9 +26,14 @@
 using namespace std;
 
 void afficher_arbre(const tree<lexeme> & arbre){
-    tree<lexeme>::iterator arbre_it (arbre.begin()), arbre_end(arbre.end());
-    for(;arbre_it!=arbre_end;++arbre_it) {
-	cout << (*arbre_it).getnom() << endl;
+	tree<lexeme>::iterator 
+	arbre_it(arbre.begin()), 
+	arbre_end(arbre.end());
+	for(;arbre_it!=arbre_end;++arbre_it) {
+		for (int i=0; i<arbre.depth(arbre_it); ++i){
+		cout << "   ";
+		}
+	cout << (*arbre_it).getnom() << ' ' << (*arbre_it).getnature()  << ' ' << (*arbre_it).getrole() << endl;
 
 	}
 }
@@ -57,21 +62,21 @@ listlexeme.push_back(lexeme("is","is"));
 listlexeme.push_back(lexeme("port","port"));
 listlexeme.push_back(lexeme("(","parenthese_ouvrante"));
 
-listlexeme.push_back(lexeme("A","id"));
+listlexeme.push_back(lexeme("a","id"));
 listlexeme.push_back(lexeme(":","deux_points"));
 listlexeme.push_back(lexeme("in","in"));
 listlexeme.push_back(lexeme("std_logic","type"));
 listlexeme.push_back(lexeme(";","endligne"));
 
-listlexeme.push_back(lexeme("B","id"));
+listlexeme.push_back(lexeme("b","id"));
 listlexeme.push_back(lexeme(":","deux_points"));
 listlexeme.push_back(lexeme("in","in"));
 listlexeme.push_back(lexeme("std_logic","type"));
 listlexeme.push_back(lexeme(";","endligne"));
 
-listlexeme.push_back(lexeme("C","id"));
+listlexeme.push_back(lexeme("c","id"));
 listlexeme.push_back(lexeme(",","virgule"));
-listlexeme.push_back(lexeme("D","id"));
+listlexeme.push_back(lexeme("d","id"));
 listlexeme.push_back(lexeme(":","deux_points"));
 listlexeme.push_back(lexeme("in","in"));
 listlexeme.push_back(lexeme("std_logic","type"));
@@ -82,16 +87,21 @@ listlexeme.push_back(lexeme(";","endligne"));
 //string l = (*(listlexeme.begin())).getnom();
 
 
-cout << (*(listlexeme.begin())).getnom() << endl;
-cout << (*(listlexeme.begin())).getnature() << endl;
-cout << (*(listlexeme.begin())).getrole() << endl;
+//cout << (*(listlexeme.begin())).getnom() << endl;
+//cout << (*(listlexeme.begin())).getnature() << endl;
+//cout << (*(listlexeme.begin())).getrole() << endl;
 
 
-afficher_liste(listlexeme);
+//afficher_liste(listlexeme);
 
 //tree<string> arbre = get_arbre_primaire(listlexeme);
-tree<lexeme> arbre = get_arbre_primaire(listlexeme);
+tree<lexeme> arbre ;
 
+get_arbre_primaire(listlexeme,arbre);
+
+//get_arbre_primaire(&listlexeme,&arbre);
+
+afficher_arbre(arbre);
 
 }
 /*
