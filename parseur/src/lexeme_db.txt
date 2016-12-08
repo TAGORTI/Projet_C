@@ -1,0 +1,8 @@
+port PORT
+entity ENTITY
+; point_vergule
+: deux_point
+, vergule
+) parentèse_fermé
+( parentèse_ouverte
+1 chiffre

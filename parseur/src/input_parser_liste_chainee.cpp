@@ -9,6 +9,7 @@
 #include "lexeme.h"
 #include <stdio.h>
 #include <string.h>
+#include <map>
 using namespace std;
 
 
@@ -21,13 +22,26 @@ void afficher_liste(const list<lexeme> & l){
    
 }
 
-string identify_lexeme(const list<lexeme> & l){
+string identify_lexeme(const list<lexeme> & l, const map<string,string> &mymap){
 list<lexeme>::const_iterator
     lit (l.begin()),
     lend(l.end());     
-    string deux;      
-    string val;
-    for(;lit!=lend;++lit){
+    string val;      
+    string key;
+
+map<string, string>::const_iterator itMap ;
+for(itMap = mymap.begin() ; itMap!=mymap.end() ; ++itMap){
+    key=itMap->first;
+    if (key.compare((*lit).getnom())==0)
+    {
+        val=itMap->second;
+        return val;
+    }
+}
+
+
+
+  /*  for(;lit!=lend;++lit){
       deux=(*lit).getnom();
      //deux= ("test").c_str(); 
      if (deux.compare("entity")== 0)
@@ -39,7 +53,7 @@ list<lexeme>::const_iterator
      else   {
       val= "AUCUN";
       return val;}
-    }
+    }*/
       
 }
 
@@ -48,6 +62,31 @@ list<lexeme>::const_iterator
 int main()
 
 {
+
+//////------------generate_lexeme_data_base----------------------------------///////////////////////////////////
+string tab[2];
+ map<string, string> mymap; 
+ ifstream db("lexeme_db.txt", ios::in);  // on ouvre en lecture
+ 
+  
+     string contenu;  // déclaration d'une chaîne qui contiendra la ligne lue
+     while (getline(db,contenu)){         
+        string ligne;
+        std::istringstream ss(contenu);
+        int i=0;         
+         while (ss >> ligne){             
+           tab[i]=ligne;          
+           i++;          
+
+         //if (i>2){cout<<"ERRORR check the lexeme_db writing rules"<<endl; exit(1);}
+         }      
+        cout<<tab[0]<<"------>"<<tab[1]<<endl;
+         mymap.insert (pair<string,string>(tab[0],tab[1]));         
+    }
+
+
+
+//////------------end_generate_lexeme_data_base----------------------------------/////////////////////////////
   ifstream fichier("code_vdh.vhd", ios::in);  // on ouvre en lecture
   if(fichier)  // si l'ouverture a fonctionné
   {
@@ -99,7 +138,7 @@ else if (contenu[i]>= 33 && contenu[i]<= 47 || contenu[i]>= 58 && contenu[i]<= 6
           string id;
            //id= "hello"; 
           inter_listlexeme.push_back(lexeme(buf));         
-          id = identify_lexeme(inter_listlexeme);
+          id = identify_lexeme(inter_listlexeme,mymap);
           listlexeme.push_back(lexeme(buf,id));
           inter_listlexeme.pop_back();
         }
