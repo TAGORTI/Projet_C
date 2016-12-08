@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "lexeme.h"
+#include <stdio.h>
+#include <string.h>
 using namespace std;
 
 
@@ -18,6 +20,29 @@ void afficher_liste(const list<lexeme> & l){
     for(;lit!=lend;++lit) cout << (*lit).getnom() << ' ' << (*lit).getnature() << ' ' << (*lit).getrole()<< endl;
    
 }
+
+string identify_lexeme(const list<lexeme> & l){
+list<lexeme>::const_iterator
+    lit (l.begin()),
+    lend(l.end());     
+    string deux;      
+    string val;
+    for(;lit!=lend;++lit){
+      deux=(*lit).getnom();
+     //deux= ("test").c_str(); 
+     if (deux.compare("entity")== 0)
+      { val= "ENTITY";
+       return val;}
+     else if (deux.compare("port")== 0){
+      val= "PORT";  
+      return val;}
+     else   {
+      val= "AUCUN";
+      return val;}
+    }
+      
+}
+
 
 
 int main()
@@ -48,8 +73,15 @@ else if (contenu[i]>= 33 && contenu[i]<= 47 || contenu[i]>= 58 && contenu[i]<= 6
    inter.push_back(contenu[i]);
    inter.push_back(' ');
   }   
-  else{ 
-   inter.push_back(contenu[i]);
+  else{
+   if (contenu[i]>= 65 && contenu[i]<= 90){ 
+    contenu[i]= contenu[i]+32;   
+    inter.push_back(contenu[i]);
+    }
+    else{
+    inter.push_back(contenu[i]);
+    }
+   
   }  
 }
 
@@ -59,13 +91,20 @@ else if (contenu[i]>= 33 && contenu[i]<= 47 || contenu[i]>= 58 && contenu[i]<= 6
 ///////////////////////////////////////////////////////////////////////////////////////////
 
   list<lexeme> listlexeme;// = creer_liste ;//  list de lexeme
+   list<lexeme> inter_listlexeme;
   list<lexeme>::iterator it;
  
  stringstream ss(inter);
-        while (ss >> buf)
-          listlexeme.push_back(lexeme(buf));
+        while (ss >> buf){
+          string id;
+           //id= "hello"; 
+          inter_listlexeme.push_back(lexeme(buf));         
+          id = identify_lexeme(inter_listlexeme);
+          listlexeme.push_back(lexeme(buf,id));
+          inter_listlexeme.pop_back();
+        }
           afficher_liste(listlexeme);    
-   /*for (it=mylist.begin(); it!=mylist.end(); ++it){           *
+   /*for (it=mylist.begin(); it!=mylist.end(); ++it){           
            cout <<*it<<endl;
            //cout <<' '<<*it;           
         }  */   
