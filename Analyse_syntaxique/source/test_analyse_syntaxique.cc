@@ -81,7 +81,29 @@ listlexeme.push_back(lexeme(":","deux_points"));
 listlexeme.push_back(lexeme("in","in"));
 listlexeme.push_back(lexeme("std_logic","type"));
 
-listlexeme.push_back(lexeme(")","parenthese_fermante"));
+listlexeme.push_back(lexeme(")","parenthese_fermante","endport"));
+listlexeme.push_back(lexeme(";","endligne"));
+
+listlexeme.push_back(lexeme("end","endprocess","endentity"));
+listlexeme.push_back(lexeme("filter","id", "entity"));
+listlexeme.push_back(lexeme(";","endligne"));
+
+listlexeme.push_back(lexeme("architecture","architecture"));
+listlexeme.push_back(lexeme("behavior","id"));
+listlexeme.push_back(lexeme("of","of"));
+listlexeme.push_back(lexeme("filter","id"));
+listlexeme.push_back(lexeme("is","is"));
+
+listlexeme.push_back(lexeme("c","id"));
+listlexeme.push_back(lexeme("<=","assignation"));
+
+listlexeme.push_back(lexeme("B","id"));
+listlexeme.push_back(lexeme("+","plus","logic_ou"));
+listlexeme.push_back(lexeme("A","id"));
+listlexeme.push_back(lexeme(";","endligne"));
+
+listlexeme.push_back(lexeme("end","endprocess","endarchitecture"));
+listlexeme.push_back(lexeme("behavior","id","architcture"));
 listlexeme.push_back(lexeme(";","endligne"));
 
 //string l = (*(listlexeme.begin())).getnom();
