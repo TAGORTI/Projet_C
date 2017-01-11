@@ -8,9 +8,9 @@
 
 
 
-#include "lexeme.h"
-#include "analyse_syntaxique.h" //analyse synthaxique
-#include "tree.hh"
+#include "..\librairie\lexeme.hh"
+#include "..\librairie\analyse_syntaxique.hh" //analyse synthaxique
+#include "..\librairie\tree.hh"
 
 #include <iostream>
 #include <stdio.h>
@@ -54,57 +54,63 @@ void func1(){}
 
 
 void get_arbre_primaire( list<lexeme> & l, tree<lexeme> & arbre){
-	//tree<lexeme> arbre;
+
 	list<lexeme>::const_iterator 
 		lit(l.begin()), 
 		lend(l.end()),
 		previous_lexeme(lit);
+
 	tree<lexeme>::iterator 
 		previous_branche, 
 		current_branche,
-		root;// next, loc, banana;
-	previous_branche=arbre.insert(arbre.end(), *lit);
+		root;
+	previous_branche=arbre.insert(arbre.end(), lexeme("root"));
 
-
-	++lit;
 	list<tree<lexeme>::iterator> listroot;
-	listroot.push_back(previous_branche);
+//	cout << listroot.size() <<endl;
+	listroot.push_front(previous_branche);
+//	cout << listroot.size() <<endl;
 
 	recursive_action( l, arbre, lit, lend, previous_lexeme, previous_branche,  current_branche, listroot);
 
+	cout << listroot.size() <<endl;
 }
 
 
-
-void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::const_iterator & lit, list<lexeme>::const_iterator & lend, list<lexeme>::const_iterator & previous_lexeme, tree<lexeme>::iterator & previous_branche, tree<lexeme>::iterator & current_branche, /*tree<lexeme>::iterator & root*/ list<tree<lexeme>::iterator> listroot){
+void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::const_iterator & lit, list<lexeme>::const_iterator & lend, list<lexeme>::const_iterator & previous_lexeme, tree<lexeme>::iterator & previous_branche, tree<lexeme>::iterator & current_branche, list<tree<lexeme>::iterator> listroot){
 
 	for(;lit!=lend;++lit,++previous_lexeme){
-		//if (*lit=="entity")
-		//	arbre.insert(arbre.end(), *lit);
-	//	case  if XXXXXXXXXXXXXXXXXXXXXXXXXXxxxxx
-//			current=arbre.insert_after(previous, *lit);
-//			previous=current;
+
 		if ( ((*lit).getnature()).compare("endprocess")== 0) {
 
-			cout << listroot.size() <<endl;
-			previous_branche=*(listroot.begin()); //faire une liste de root
+			//previous_branche=*(listroot.end()); //faire une liste de root
 
 			current_branche=arbre.insert_after(previous_branche, *lit);
-			previous_branche=current_branche;
+			previous_branche=*listroot.begin();
 
-
-			listroot.pop_back();
-			cout << listroot.size() <<endl;
+			//cout << listroot.size();
+			if (listroot.size()==0){
+				cout << "erreur il y a un end de trop";
+			}
+			else {
+				listroot.pop_front();
+			}
 		}
 
-		else if ( ((*previous_lexeme).getnature()).compare("entity")== 0 ) {
-			//root=previous_branche;
-			listroot.push_back(previous_branche);
+		else if ( ((*lit).getnature()).compare("entity")== 0 ) {
 			
-			current_branche=arbre.append_child(previous_branche, *lit);
+			current_branche=arbre.insert_after(previous_branche, *lit);
+
+			listroot.push_front(current_branche);
+
 			previous_branche=current_branche;
 			++lit,++previous_lexeme;
 
+			current_branche=arbre.append_child(previous_branche, *lit);
+			previous_branche=current_branche;
+			
+			++lit,++previous_lexeme;
+			
 			current_branche=arbre.append_child(previous_branche, *lit);
 			previous_branche=current_branche;
 
@@ -115,29 +121,97 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::co
 			
 		}
 
-/*		else if ( ((*previous_lexeme).getnature()).compare("port")== 0) {
-			//root=previous_branche;
-			listroot.push_back(previous_branche);
+		else if ( ((*lit).getnature()).compare("port")== 0) {
 
-			current_branche=arbre.insert_after(previous_branche, *lit); //append_child
+			current_branche=arbre.append_child(previous_branche, *lit);
 			previous_branche=current_branche;
+			++lit,++previous_lexeme;
+				
+			current_branche=arbre.append_child(previous_branche, *lit);
+			previous_branche=current_branche;
+			++lit,++previous_lexeme;
+				
 
+			cout << ((*lit).getnom());
+			listroot.push_front(current_branche);
+			
+			
+			for(;lit!=lend;){
+				for(;lit!=lend;){
+				
+
+	//			break;
+					if ( ((*lit).getnom()).compare(";")== 0) {
+						current_branche=arbre.append_child(previous_branche, *lit);
+						previous_branche=current_branche;
+						++lit,++previous_lexeme;
+						
+						previous_branche=*listroot.begin();
+						//listroot.pop_front();
+						break;
+					}
+					else if ( ((*lit).getnom()).compare(")")== 0) {
+						
+						current_branche=arbre.append_child(previous_branche, *lit);
+						previous_branche=current_branche;
+						++lit,++previous_lexeme;
+						
+						current_branche=arbre.append_child(previous_branche, *lit);
+						previous_branche=current_branche;
+							
+											
+						previous_branche=*listroot.begin();
+						listroot.pop_front();
+						goto stop;
+					} 	
+					else {
+						current_branche=arbre.append_child(previous_branche, *lit);
+						previous_branche=current_branche;
+						++lit,++previous_lexeme;
+					}		
+				}		
+				
+			}
+			stop:;
+//			cout << "fin";
+//			break;
+		}
+		
+
+		else if ( ((*lit).getnature()).compare("architecture")== 0) {
+			current_branche=arbre.insert_after(previous_branche, *lit);
+
+			listroot.push_front(current_branche);
+
+			previous_branche=current_branche;
+			
+			++lit,++previous_lexeme;
+			current_branche=arbre.append_child(previous_branche, *lit);
+			previous_branche=current_branche;
+			
+			++lit,++previous_lexeme;	
+			current_branche=arbre.append_child(previous_branche, *lit);
+			previous_branche=current_branche;
+			
+			++lit,++previous_lexeme;	
+			current_branche=arbre.append_child(previous_branche, *lit);
+			previous_branche=current_branche;
+			
+			++lit,++previous_lexeme;	
+			current_branche=arbre.append_child(previous_branche, *lit);
+			previous_branche=current_branche;
+			
+			++lit,++previous_lexeme;	
+			current_branche=arbre.append_child(previous_branche, *lit);
+			previous_branche=current_branche;
 		}
 
-*/	/*	else if ( ((*previous_lexeme).getnature()).compare("endprocess")== 0) {
 
-			previous_branche=*listroot.end(); //faire une liste de root
-
-
-			listroot.pop_back();
-		}*/
 
 		else { 
 			current_branche=arbre.insert_after(previous_branche, *lit);
 			previous_branche=current_branche;
 		}
-
-
 		
 	
 	}//fin du for
@@ -224,3 +298,4 @@ list<lexeme>::const_iterator
     }
       
 }*/
+

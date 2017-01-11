@@ -8,8 +8,8 @@
 
 
 
-#include "lexeme.h"
-#include "analyse_syntaxique.h" //analyse synthaxique
+#include "lexeme.hh"
+#include "analyse_syntaxique.hh" //analyse synthaxique
 #include "tree.hh"
 
 #include <iostream>

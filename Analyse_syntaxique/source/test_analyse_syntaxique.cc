@@ -8,9 +8,9 @@
 
 
 
-#include "lexeme.h"
-#include "analyse_syntaxique.h" //analyse synthaxique
-#include "tree.hh"
+#include "..\librairie\lexeme.hh"
+#include "..\librairie\analyse_syntaxique.hh" //analyse synthaxique
+#include "..\librairie\tree.hh"
 
 #include <iostream>
 #include <stdio.h>
@@ -125,6 +125,7 @@ get_arbre_primaire(listlexeme,arbre);
 
 afficher_arbre(arbre);
 
+cin.get();
 }
 /*
 cout << l<<endl;
