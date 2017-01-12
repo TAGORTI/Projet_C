@@ -15,10 +15,10 @@ test_as: lexeme.o test_analyse_syntaxique.o analyse_syntaxique.o
 test_analyse_syntaxique.o: source/test_analyse_syntaxique.cc
 	$(CC) -o $@ -c $< $(CFLAGS)
 
-lexeme.o: source/lexeme.cc librairie/lexeme.h
+lexeme.o: source/lexeme.cc librairie/lexeme.hh
 	$(CC) -o $@ -c $< $(CFLAGS)
 
-analyse_syntaxique.o: source/analyse_syntaxique.cc librairie/analyse_syntaxique.h
+analyse_syntaxique.o: source/analyse_syntaxique.cc librairie/analyse_syntaxique.hh
 	$(CC) -o $@ -c $< $(CFLAGS)
 
 clean:
