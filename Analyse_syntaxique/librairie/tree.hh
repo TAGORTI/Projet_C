@@ -39,7 +39,6 @@
 #include <stdlib.h>
 #include <vector>
 #include <list>
-#include "lexeme.h"
 #include <iosfwd>
 
 #include <list>
