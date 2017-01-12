@@ -8,9 +8,13 @@
 
 
 
-#include "..\librairie\lexeme.hh"
-#include "..\librairie\analyse_syntaxique.hh" //analyse synthaxique
-#include "..\librairie\tree.hh"
+//#include "..\librairie\lexeme.hh"
+//#include "..\librairie\analyse_syntaxique.hh" //analyse synthaxique
+//#include "..\librairie\tree.hh"
+
+#include "lexeme.hh"
+#include "analyse_syntaxique.hh" //analyse synthaxique
+#include "tree.hh"
 
 #include <iostream>
 #include <stdio.h>

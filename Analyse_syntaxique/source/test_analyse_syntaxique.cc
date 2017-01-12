@@ -8,9 +8,14 @@
 
 
 
-#include "..\librairie\lexeme.hh"
-#include "..\librairie\analyse_syntaxique.hh" //analyse synthaxique
-#include "..\librairie\tree.hh"
+//#include "..\librairie\lexeme.hh"
+//#include "..\librairie\analyse_syntaxique.hh" //analyse synthaxique
+//#include "..\librairie\tree.hh"
+
+#include "lexeme.hh"
+#include "analyse_syntaxique.hh" //analyse synthaxique
+#include "tree.hh"
+
 
 #include <iostream>
 #include <stdio.h>
@@ -54,11 +59,11 @@ int main() {
 
 list<lexeme> listlexeme;// = creer_liste ;//  list de lexeme
 
-listlexeme.push_back(lexeme("entity","entity"));
+listlexeme.push_back(lexeme("entity","entity",1,1));
 
 
-listlexeme.push_back(lexeme("filter","id"));
-listlexeme.push_back(lexeme("is","is"));
+listlexeme.push_back(lexeme("filter","id",2,2));
+listlexeme.push_back(lexeme("is","is",3,3));
 listlexeme.push_back(lexeme("port","port"));
 listlexeme.push_back(lexeme("(","parenthese_ouvrante"));
 
@@ -123,9 +128,12 @@ get_arbre_primaire(listlexeme,arbre);
 
 //get_arbre_primaire(&listlexeme,&arbre);
 
-afficher_arbre(arbre);
+//afficher_arbre(arbre);
 
 cin.get();
+
+(*(listlexeme.begin())).getposition();
+
 }
 /*
 cout << l<<endl;
