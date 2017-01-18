@@ -21,6 +21,8 @@ entity FSM is
 	   A,B			: in STD_LOGIC_VECTOR(7 downto 0) ;
 	   comparateur			: out std_logic;
 	   CMD			: in STD_LOGIC_VECTOR(3 downto 0) ;
+	   ADC_Eocb_bar         : out  std_logic;
+	   Filter_Out  : out std_logic_vector(7 downto 0)
 end FSM;
 
 
@@ -42,14 +44,19 @@ signal b_u: unsigned (7 downto 0);
 
 
   component ACCU
-    port(Accu_in          : in  std_logic_vector(15 downto 0);
+    port(Accu_in          : in  std_logic_vector(7 downto 0);
                 Accu_ctrl : in  std_logic;
                 CLK       : in  std_logic;
                 RESET     : in  std_logic;
-                Accu_out  : out std_logic_vector(20 downto 0)) ;
+                Accu_out  : out std_logic_vector(7 downto 0)) ;
   end component;
+  
+
 
 begin
+
+ C1: accu PORT MAP (Accu_in=>"11110000",Accu_ctrl=>'1',clk=>'1',reset=>'1',Accu_out=>filter_out);
+
 -- synchronous state
 	a_u<= unsigned(a); --memorisation des valeur a,b dans leur signaux "tampon"
 	b_u<= unsigned(b);
@@ -79,7 +86,7 @@ begin
 					case CMD is
 						when "0000" => result <= ('0' & a_u)  ; 
 						when "0001" => result <= ('0' & b_u) - ('0' & a_u );
-						when "0010" => result <= ('0' & a_u) not ('0' & b_u );
+						when "0010" => result <=  not ('0' & b_u );
 						when "0011" => result <= ('0' & a_u) + ('0' & b_u );
 						when "0100" => result <= ('0' & a_u) XOR ('0' & b_u );
 						when "0101" => result <= ('0' & a_u) OR ('0' & b_u );
