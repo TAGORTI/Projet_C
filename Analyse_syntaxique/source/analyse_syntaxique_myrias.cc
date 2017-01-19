@@ -87,16 +87,27 @@ void func1(){}
 
 }*/
 
+/*void sortie_erreur(list<lexeme>::const_iterator & erreur_lexeme){ //ca ne veut pas compiler , le goto dans une autre fonction ne fonctionne pas et une erreur de const sur lexeme
+		cout << "erreur au lexeme suivant";		
+		(*erreur_lexeme).getposition();
+		goto sortie_erreur;
+	}
+*/ 
+
 
 void get_arbre_primaire( list<lexeme> & l, tree<lexeme> & arbre){
 
-	list<lexeme>::const_iterator  //itérateur sur liste
+	list<lexeme>::iterator  //itérateur sur liste
 		lit(l.begin()), 
 		lend(l.end()),
 		previous_lexeme(lit);
 		
-		previous_lexeme=l.push_front(lexeme("root",1,1));
 
+	l.push_front(lexeme("root_liste",1,1));
+		previous_lexeme=l.begin();
+
+//		cout << (*lit).getnom()<< endl;
+//		cout << (*previous_lexeme).getnom() << endl;
 		
 
 	tree<lexeme>::iterator  //itérateur sur l'arbre
@@ -104,19 +115,20 @@ void get_arbre_primaire( list<lexeme> & l, tree<lexeme> & arbre){
 		current_branche,
 		root;
 
-	previous_branche=arbre.insert(arbre.end(), lexeme("root")); // creation de la racine de l'arbre
+	previous_branche=arbre.insert(arbre.end(), lexeme("root_arbre")); // creation de la racine de l'arbre
 
 	list<tree<lexeme>::iterator> listroot;
 	listroot.push_front(previous_branche); // Pile FILO firts in Last Out pour l'arbre
 
 	list<list<lexeme>::iterator> listfilo; // Pile FILO firts in Last Out pour la liste
+//	listfilo.push_front(lit);
 
-//	recursive_action( l, arbre, lit, lend, previous_lexeme, previous_branche,  current_branche, listroot);//mise en fonction du contenue pour recursivité possible
+	recursive_action( l, arbre, lit, lend, previous_lexeme, previous_branche, current_branche,listroot, listfilo);//mise en fonction du contenue pour recursivité possible
 
 //	cout << listroot.size() <<endl;
 }
 
-void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::const_iterator & lit, list<lexeme>::const_iterator & lend, list<lexeme>::const_iterator & previous_lexeme, tree<lexeme>::iterator & previous_branche, tree<lexeme>::iterator & current_branche, list<tree<lexeme>::iterator> listroot){
+void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::iterator & lit, list<lexeme>::iterator & lend, list<lexeme>::iterator & previous_lexeme, tree<lexeme>::iterator & previous_branche, tree<lexeme>::iterator & current_branche, list<tree<lexeme>::iterator> & listroot, list<list<lexeme>::iterator> & listfilo){
 
 	for(;lit!=lend;++lit,++previous_lexeme){
 
@@ -129,7 +141,7 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::co
 
 			//cout << listroot.size();
 			if (listroot.size()==0){
-				cout << "erreur il y a un end de trop";
+				cout << "erreur il y a un end de trop" << endl;
 				goto sortie_erreur;
 			}
 			else {
@@ -137,30 +149,125 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::co
 			}
 		}
 
-		else if ( ((*lit).getnature()).compare("librairy")== 0 ) {
+		else if ( ((*lit).getnature()).compare("library")== 0 ) { // SOUS ARBRE
 			
-			listfilo.push_front(lit) // sauvegarde de l'emplacement courrant (itérateur) dans listfilo, un point de sauvegarde
-			
-			
+			listfilo.push_front(lit); // sauvegarde de l'emplacement courrant (itérateur) dans listfilo, un point de sauvegarde		
+			++lit,++previous_lexeme;
+
+			for(;lit!=lend;){//debut de la verification
+				
+				if ( ((*lit).getnom()).compare(";")== 0) {
+
+					if ( ((*(++lit)).getnature()).compare("use")== 1){// test de la sortie
+						--lit;
+
+						lit=*listfilo.begin(); // recharge du dernier point d'encrage pour remonter dans la liste
+						previous_lexeme=(--(lit));
+						++lit;
+
+						listfilo.pop_front();
+						goto arbriser_library;
+					}
+
+					else if ( ((*previous_lexeme).getnature()).compare("id")== 0){
+						--lit;
+						++lit,++previous_lexeme;
+					}
+
+					else if ( ((*previous_lexeme).getnature()).compare("all")== 0){
+						--lit;
+						++lit,++previous_lexeme;
+					}
+
+					else {
+						cout << "erreur au lexeme suivant";		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}
+				}	
+
+					//tous les lexemes possible dans ce sous arbre
+				else if ( ((*lit).getnature()).compare("use")== 0) { 
+					if (((*previous_lexeme).getnature()).compare("endligne")== 0){
+						++lit,++previous_lexeme;
+					}
+					else {
+						cout << "erreur au lexeme suivant"<< "A";		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}
+							
+				}
+				else if ( ((*lit).getnature()).compare("id")== 0) { 
+					if (((*previous_lexeme).getnature()).compare("library")== 0){
+						++lit,++previous_lexeme;
+					}
+					else if (((*previous_lexeme).getnature()).compare("use")== 0){
+						++lit,++previous_lexeme;
+					}
+					else if (((*previous_lexeme).getnature()).compare("point")== 0){
+						++lit,++previous_lexeme;
+					}
+
+					else { //////////////////ERREUR ICI
+						cout << "erreur au lexeme suivant"<< "B" << (*previous_lexeme).getnature() <<(*lit).getnom();		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}
+							
+				}
+
+				else if ( ((*lit).getnature()).compare("all")== 0) { 
+					if (((*previous_lexeme).getnature()).compare("point")== 0){
+						++lit,++previous_lexeme;
+					}
+					else {
+						cout << "erreur au lexeme suivant"<< "C";		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}
+							
+				}
+				else if ( ((*lit).getnature()).compare("point")== 0) { 
+					if (((*previous_lexeme).getnature()).compare("id")== 0){
+						++lit,++previous_lexeme;
+					}
+
+					else {
+						cout << "erreur au lexeme suivant"<< "D";		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}
+							
+				}
+
+						//else if { } // autre lexeme possible
+						
+				else { // un lexeme qui n'est pas autorisé dans cette sous branche
+					cout << "erreur au lexeme suivant" << "E";		
+					(*lit).getposition();
+					goto sortie_erreur;
+				}
+
+				
+			} // fin du FOR de vérification
+		arbriser_library:;
+
 			current_branche=arbre.append_child(previous_branche, *lit);
 			previous_branche=current_branche;
 			++lit,++previous_lexeme;
 
-			for(;lit!=lend;){
-				if ( ((*lit).getnom()).compare(";")== 0) {
-					current_branche=arbre.append_child(previous_branche, *lit);
-					previous_branche=current_branche;
-					++lit,++previous_lexeme;
-						
-					previous_branche=*listroot.begin(); // rechage du dernier point d'encrage pour remonter dans l'arborescence
-					//listroot.pop_front();
-					break;
-				}
-			}
-			
-		}
+			listroot.push_front(current_branche);
 
-		else if ( ((*lit).getnature()).compare("use")== 0 ) {
+			current_branche=arbre.append_child(previous_branche, *lit);
+			previous_branche=current_branche;
+			++lit,++previous_lexeme;		
+
+		finlibrairy:;	
+		} // fin du else if librairy
+
+//////////////////////////////////////////////////////////////////////////////////////////////dessous des exemples
+/*		else if ( ((*lit).getnature()).compare("use")== 0 ) {
 			
 		}
 
@@ -186,7 +293,7 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::co
 		}
 
 
-/// en dessous comment se deplacer ter faire l'arbre
+///////////////////////////////////////////////// en dessous comment se deplacer ter faire l'arbre
 
 		else if ( ((*lit).getnature()).compare("entity")== 0 ) {
 			
@@ -300,7 +407,7 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::co
 			previous_branche=current_branche;
 		}
 
-
+*/
 
 		else { 
 			current_branche=arbre.insert_after(previous_branche, *lit);
@@ -309,8 +416,13 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::co
 		
 	
 	}//fin du for GENERAL
+goto saut_erreur;
 
 sortie_erreur:;
+
+arbre.erase_children(arbre.begin());
+
+saut_erreur:;
 	//return arbre;
 }
 
