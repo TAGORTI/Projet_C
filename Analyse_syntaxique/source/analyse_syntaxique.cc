@@ -3,6 +3,7 @@
 // Author      : Valérian
 // Version     : 0.1
 // Copyright   : PHELMA
+//
 // Description : Module d'analyse syntaxique du projet C
 //============================================================================
 
@@ -88,31 +89,37 @@ void func1(){}
 }*/
 
 
+
 void get_arbre_primaire( list<lexeme> & l, tree<lexeme> & arbre){
 
-	list<lexeme>::const_iterator 
+	list<lexeme>::const_iterator  //itérateur sur liste
 		lit(l.begin()), 
 		lend(l.end()),
 		previous_lexeme(lit);
+		
+		l.push_front(lexeme("root",1,1));
+        previous_lexeme=l.begin();
+		
 
-	tree<lexeme>::iterator 
+	tree<lexeme>::iterator  //itérateur sur l'arbre
 		previous_branche, 
 		current_branche,
 		root;
-	previous_branche=arbre.insert(arbre.end(), lexeme("root"));
+
+	previous_branche=arbre.insert(arbre.end(), lexeme("root")); // creation de la racine de l'arbre
 
 	list<tree<lexeme>::iterator> listroot;
-//	cout << listroot.size() <<endl;
-	listroot.push_front(previous_branche); // Pile FILO firts in Last Out
-//	cout << listroot.size() <<endl;
+	listroot.push_front(previous_branche); // Pile FILO firts in Last Out pour l'arbre
 
-	recursive_action( l, arbre, lit, lend, previous_lexeme, previous_branche,  current_branche, listroot);
+	list<list<lexeme>::const_iterator> listfilo; // Pile FILO firts in Last Out pour la liste
+     listfilo.push_front(lit);
+	recursive_action( l, arbre, lit, lend, previous_lexeme, previous_branche,  current_branche, listroot,listfilo);//mise en fonction du contenue pour recursivité possible
 
-	cout << listroot.size() <<endl;
+//	cout << listroot.size() <<endl;
 }
 
 
-void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::const_iterator & lit, list<lexeme>::const_iterator & lend, list<lexeme>::const_iterator & previous_lexeme, tree<lexeme>::iterator & previous_branche, tree<lexeme>::iterator & current_branche, list<tree<lexeme>::iterator> listroot){
+void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::const_iterator & lit, list<lexeme>::const_iterator & lend, list<lexeme>::const_iterator & previous_lexeme, tree<lexeme>::iterator & previous_branche, tree<lexeme>::iterator & current_branche, list<tree<lexeme>::iterator> listroot,list<list<lexeme>::const_iterator> listfilo){
 
 	for(;lit!=lend;++lit,++previous_lexeme){
 
@@ -132,7 +139,7 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::co
 				listroot.pop_front();
 			}
 		}
-
+/*
 		else if ( ((*lit).getnature()).compare("entity")== 0 ) {
 			
 
@@ -243,9 +250,71 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::co
 			++lit,++previous_lexeme;	
 			current_branche=arbre.append_child(previous_branche, *lit);
 			previous_branche=current_branche;
-		}
+		}*/
+        
 
-
+        // gerer les instruction type
+         else if  (((*lit).getnom()).compare("type")== 0){         
+            listfilo.push_front(lit);//sauver l'iterateur de l'emplacement courant dans une liste filo
+            lit++;
+           for(;lit!=lend;){
+            if (((*lit).getnom()).compare(";")== 0){
+             lit=*listfilo.begin();// retourner au l étérateur qui pointe sur type
+             listfilo.pop_front();// supprimer cette valeur
+              cout<<"erreur you have a ; just after the key word type"<<endl; 
+             break;             
+            }
+            else{
+               if (((*lit).getnature()).compare("id")== 0){
+                    lit++;                    
+                    if((((*lit).getnom()).compare("is")== 0)){
+                        lit++;                        
+                        if((((*lit).getnom()).compare("(")== 0)){
+                                lit++;
+                             for(;lit!=lend;){
+                               // bool test=false;
+                              if ( (((*lit).getnom()).compare(")")== 0)){
+                                    lit++;                   
+                                    if( ((*lit).getnom()).compare(";")== 0){
+                                        cout<<"end of the type instr"<<endl; exit(1); 
+                                    }
+                                    else{
+                                     cout<<"error thier is an ) in your instruction"<<endl;
+                                    }
+                              }   
+                              else if(((*lit).getnature()).compare("id")== 0){                                  
+                                        lit++;
+                                        if(((*lit).getnom()).compare(",")== 0){
+                                            cout<<" vergule detected"<<endl;
+                                        }
+                                        else{
+                                        cout<<"erreur the separator should be an ,"<<endl;
+                                        }                                                                 
+                                  }
+                             else{
+                                 cout<<"erreur should be an id after ("<<endl;exit(1);
+                               }
+                             }                           
+                         }
+                        else{
+                        cout<<"erreur you should have an ( after type/id"<<endl;
+                        }
+                                    
+                    }
+                    else{
+                     cout<<"erreur you should have an IS  after type/id"<<endl;                   
+                    }
+               }
+               else{
+                   cout<<"erreur you should have an identifiant after type"<<endl;
+               }
+                         
+            }
+            
+           } 
+   cout<<"ok "<<endl;           
+         }
+        //fin  gerer les instruction type
 
 		else { 
 			current_branche=arbre.insert_after(previous_branche, *lit);
