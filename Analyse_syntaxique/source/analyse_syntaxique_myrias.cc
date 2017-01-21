@@ -141,7 +141,7 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::it
 	for(;lit!=lend;){  // master  loop
 
 		if ( ((*lit).getnature()).compare("endprocess")== 0) {
-
+/*
 
 			current_branche=arbre.insert_after(previous_branche, *lit);
 			previous_branche=*listroot.begin(); // return to saved tree position
@@ -154,9 +154,11 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::it
 			else {
 				listroot.pop_front();
 			}
+*/
+			++lit,++previous_lexeme,++next_lexeme;
 		}
 
-//////////////////////////////////////// LIBRARY SUB LOOP ///////////////////////////////////////////////////////////
+//////////////////////////////////////// LIBRARY PROTOCOL ///////////////////////////////////////////////////////////
 		else if ( ((*lit).getnature()).compare("library")== 0 ) { 
 			
 			listfilo.push_front(lit); // save list position	
@@ -175,6 +177,8 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::it
 						previous_lexeme=(--(lit));
 //						cout << (*lit).getnom()<< endl;
 						++lit;
+						next_lexeme= (++(lit));
+						--lit;
 //						cout << (*lit).getnom()<< endl;
 //						cout << (*previous_lexeme).getnom()<< endl;
 
@@ -261,12 +265,12 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::it
 				}
 
 				
-			} // END OF VERIFICATION
+			} // END OF VERIFICATION LOOP
 			
 // Debog code	cout << "NE DOIT PAS SORTIR ICI"<< endl;
 			
 			arbriser_library:;	
-	//	cout << (*lit).getnom()<< endl;
+//	cout << (*lit).getnom()<< endl;
 
 			current_branche=arbre.append_child(previous_branche, *lit); //Lexem is LIBRARY 
 			previous_branche=current_branche;
@@ -318,12 +322,496 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::it
 					
 					break;
 				}
-			}
+			} // END OF CONSTRUCTION LOOP
 
 		finlibrairy:;
 		cout << "Library tree constructed"<< endl; 	
 		} 
-///////////////////////////////////////////////// END LIBRARY SUB LOOP /////////////////////////////////////////////////
+///////////////////////////////////////////////// END LIBRARY PROTOCOL /////////////////////////////////////////////////
+
+//////////////////////////////////////////////// ENTITY PROTOCOL /////////////////////////////////////////////////
+		else if ( ((*lit).getnature()).compare("entity")== 0 ) { 
+			
+			listfilo.push_front(lit); // save list position	
+			++lit,++previous_lexeme,++next_lexeme;
+			string entity_name=(*lit).getnom(); //Saving the name for checking
+			int parenthese_count = 0;
+
+			for(;lit!=lend;){    // start verification loop
+
+				if ( ((*lit).getnature()).compare("endligne")== 0) {  //authorized lexeme
+
+					
+					if ( ((*previous_lexeme).getnom()).compare(entity_name)==0 and ((*previous_lexeme).getnature()).compare("id")==0  ){   // test exit
+					//	cout << (*next_lexeme).getnom()<< endl;
+						lit=*listfilo.begin(); // return to saved list position
+						previous_lexeme=(--(lit));
+						++lit;
+						next_lexeme= (++(lit));
+						--lit;
+//						cout << (*lit).getnom()<< endl;
+//						cout << (*previous_lexeme).getnom()<< endl;
+
+						listfilo.pop_front(); // delete used saved position
+						if (parenthese_count==0){
+							cout << "Entity checked"<< endl;
+							goto arbriser_entity; // exit loop
+						}
+						else {
+							cout << "error of number of parenthese in ENTITY definition "  << parenthese_count;	
+							goto sortie_erreur;
+						}
+					}
+
+					else if ( ((*previous_lexeme).getnature()).compare("std_logic")== 0){ //authorized previous lexeme
+						++lit,++previous_lexeme,++next_lexeme; 
+					}
+
+					else if ( ((*previous_lexeme).getnature()).compare("parenthese_fermante")== 0){
+						++lit,++previous_lexeme,++next_lexeme; 
+					}
+
+					else {    // unauthorized previous lexeme
+						cout << "error at specified lexem";		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}
+				}	
+
+
+				else if ( ((*lit).getnature()).compare("is")== 0) { //authorized lexeme
+					if (((*previous_lexeme).getnature()).compare("id")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+					else {
+						cout << "error at specified lexem";  // Debog code << "A";		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}
+							
+				}
+
+				else if ( ((*lit).getnature()).compare("virgule")== 0) { //authorized lexeme
+					if (((*previous_lexeme).getnature()).compare("id")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+					else {
+						cout << "error at specified lexem";  // Debog code << "A";		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}		
+				}
+
+				else if ( ((*lit).getnature()).compare("id")== 0) { //authorized lexeme
+					if (((*previous_lexeme).getnature()).compare("entity")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+					else if (((*previous_lexeme).getnature()).compare("endligne")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+					else if (((*previous_lexeme).getnature()).compare("parenthese_ouvrante")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}   
+					
+					else if (((*previous_lexeme).getnature()).compare("virgule")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					} 
+					
+					else if (((*previous_lexeme).getnature()).compare("endprocess")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					} 
+					else { 
+						cout << "error at specified lexem";  // Debog code << "B" << (*previous_lexeme).getnature() <<(*lit).getnom();		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}
+							
+				}
+
+				else if ( ((*lit).getnature()).compare("deux_points")== 0) { //authorized lexeme
+					if (((*previous_lexeme).getnature()).compare("id")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+					else {
+						cout << "error at specified lexem";//<< "C";		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}
+							
+				}
+				else if ( ((*lit).getnature()).compare("port")== 0) { //authorized lexeme 
+					if ((((*previous_lexeme).getnature()).compare("is")== 0) and ((((*next_lexeme).getnature()).compare("parenthese_ouvrante")== 0))){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+
+					else {
+						cout << "error at specified lexem";  // Debog code << "D";		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}			
+				}
+
+				else if ( ((*lit).getnature()).compare("parenthese_ouvrante")== 0) { //authorized lexeme 
+					
+					if (((*previous_lexeme).getnature()).compare("port")== 0){
+						++lit,++previous_lexeme,++next_lexeme;++parenthese_count;
+					}
+					
+					
+					else if (((*previous_lexeme).getnature()).compare("std_logic_vector")== 0){
+						++lit,++previous_lexeme,++next_lexeme;++parenthese_count;
+					}					
+
+					else {
+						cout << "error at specified lexem";  // Debog code << "D";		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}			
+				}
+					
+				else if ( ((*lit).getnature()).compare("parenthese_fermante")== 0) { //authorized lexeme 
+					
+					if (((*previous_lexeme).getnature()).compare("chiffre")== 0){
+						++lit,++previous_lexeme,++next_lexeme;--parenthese_count;
+					}
+					
+					else if (((*previous_lexeme).getnature()).compare("std_logic")== 0){
+						++lit,++previous_lexeme,++next_lexeme;--parenthese_count;
+					}
+					
+					else if (((*previous_lexeme).getnature()).compare("parenthese_fermante")== 0){
+						++lit,++previous_lexeme,++next_lexeme;--parenthese_count;
+					}					
+					else if (((*previous_lexeme).getnature()).compare("nombre")== 0){
+						++lit,++previous_lexeme,++next_lexeme;--parenthese_count;
+					}
+					else {
+						cout << "error at specified lexem";  // Debog code << "D";		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}		
+				}
+				
+				else if ( ((*lit).getnature()).compare("std_logic")== 0) { //authorized lexeme 
+					if (((*previous_lexeme).getnature()).compare("in")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+					
+					else if (((*previous_lexeme).getnature()).compare("out")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}					
+					else if (((*previous_lexeme).getnature()).compare("inout")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+					
+					else if (((*previous_lexeme).getnature()).compare("buffer")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+					else if (((*previous_lexeme).getnature()).compare("linkage")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+					else {
+						cout << "error at specified lexem";  // Debog code << "D";		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}			
+				}				
+
+				else if ( ((*lit).getnature()).compare("std_logic_vector")== 0) { //authorized lexeme 
+					if (((*previous_lexeme).getnature()).compare("in")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+					
+					else if (((*previous_lexeme).getnature()).compare("out")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}					
+					else if (((*previous_lexeme).getnature()).compare("inout")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+					
+					else if (((*previous_lexeme).getnature()).compare("buffer")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+					else if (((*previous_lexeme).getnature()).compare("linkage")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+					else {
+						cout << "error at specified lexem";  // Debog code << "D";		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}			
+				}
+				
+				else if ( ((*lit).getnature()).compare("in")== 0) { //authorized lexeme 
+					if (((*previous_lexeme).getnature()).compare("deux_points")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+
+					else {
+						cout << "error at specified lexem";  // Debog code << "D";		
+						(*previous_lexeme).getposition();
+					goto sortie_erreur;
+					}			
+				}
+
+				else if ( ((*lit).getnature()).compare("out")== 0) { //authorized lexeme 
+					if (((*previous_lexeme).getnature()).compare("deux_points")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+
+					else {
+						cout << "error at specified lexem";  // Debog code << "D";		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}			
+				}
+
+				else if ( ((*lit).getnature()).compare("inout")== 0) { //authorized lexeme 
+					if (((*previous_lexeme).getnature()).compare("deux_points")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+
+					else {
+						cout << "error at specified lexem";  // Debog code << "D";		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}			
+				}
+
+				else if ( ((*lit).getnature()).compare("buffer")== 0) { //authorized lexeme 
+					if (((*previous_lexeme).getnature()).compare("deux_points")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+
+					else {
+						cout << "error at specified lexem";  // Debog code << "D";		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}			
+				}
+
+				else if ( ((*lit).getnature()).compare("linkage")== 0) { //authorized lexeme 
+					if (((*previous_lexeme).getnature()).compare("deux_points")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+
+					else {
+						cout << "error at specified lexem";  // Debog code << "D";		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}			
+				}
+
+				else if ( ((*lit).getnature()).compare("chiffre")== 0) { //authorized lexeme 
+					if (((*previous_lexeme).getnature()).compare("parenthese_ouvrante")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+
+					else if (((*previous_lexeme).getnature()).compare("downto")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+
+					else if (((*previous_lexeme).getnature()).compare("to")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+
+
+					else {
+						cout << "error at specified lexem";  // Debog code << "D";		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}			
+				}
+
+				else if ( ((*lit).getnature()).compare("nombre")== 0) { //authorized lexeme 
+					if (((*previous_lexeme).getnature()).compare("parenthese_ouvrante")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+
+					else if (((*previous_lexeme).getnature()).compare("downto")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+
+					else if (((*previous_lexeme).getnature()).compare("to")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+
+
+					else {
+						cout << "error at specified lexem";  // Debog code << "D";		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}			
+				}
+				
+				else if ( ((*lit).getnature()).compare("to")== 0) { //authorized lexeme 
+					if (((*previous_lexeme).getnature()).compare("chiffre")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+
+					else if (((*previous_lexeme).getnature()).compare("nombre")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+
+					else {
+						cout << "error at specified lexem";  // Debog code << "D";		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}			
+				}
+				
+				else if ( ((*lit).getnature()).compare("downto")== 0) { //authorized lexeme 
+					if (((*previous_lexeme).getnature()).compare("chiffre")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+
+					else if (((*previous_lexeme).getnature()).compare("nombre")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+
+					else {
+						cout << "error at specified lexem";  // Debog code << "D";		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}			
+				}
+				
+				else if ( ((*lit).getnature()).compare("endprocess")== 0) { //authorized lexeme 
+					if ((((*previous_lexeme).getnature()).compare("endligne")== 0) and ((((*next_lexeme).getnom()).compare(entity_name)== 0))){
+						++lit,++previous_lexeme,++next_lexeme;	
+					}
+
+					else {
+						cout << "error at specified lexem";  // Debog code << "D";		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}			
+				}
+				
+						
+				else { //  unauthorized lexeme
+					cout << "error at specified lexem";// << "E";		
+					(*lit).getposition();
+					goto sortie_erreur;
+				}
+				
+			} // END OF VERIFICATION LOOP
+			arbriser_entity:;
+			
+					
+			current_branche=arbre.append_child(previous_branche, *lit); //Lexem is ENTITY
+			previous_branche=current_branche;
+			++lit,++previous_lexeme,++next_lexeme;
+			
+			current_branche=arbre.append_child(previous_branche, *lit); //Lexem is ENTITY's name
+			previous_branche=current_branche;
+			++lit,++previous_lexeme,++next_lexeme;
+			
+			++lit,++previous_lexeme,++next_lexeme;
+			
+			current_branche=arbre.append_child(previous_branche, *lit); //Lexem is PORT
+			previous_branche=current_branche;
+			listroot.push_front(current_branche); // Saving tree position
+			++lit,++previous_lexeme,++next_lexeme;
+			
+			++lit,++previous_lexeme,++next_lexeme;
+			/// ici on est au premier identifiant
+			
+			for(;lit!=lend;){ 
+				if (( ((*lit).getnature()).compare("id")== 0) and ( ((*lit).getnom()).compare(entity_name)!= 0)){
+					listfilo.push_front(lit);
+					
+					current_branche=arbre.append_child(previous_branche, *lit); 
+					previous_branche=current_branche;
+					
+					while ( ((*lit).getnature()).compare("deux_points")!= 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+					++lit,++previous_lexeme,++next_lexeme;
+					
+					current_branche=arbre.append_child(previous_branche, *lit); 
+					previous_branche=current_branche;
+					++lit,++previous_lexeme,++next_lexeme;
+					
+					if ( ((*lit).getnature()).compare("std_logic")== 0){
+						current_branche=arbre.append_child(previous_branche, *lit); 
+						previous_branche=*listroot.begin();
+						
+						lit=*listfilo.begin(); // return to saved list position
+						previous_lexeme=(--(lit));
+						++lit;
+						next_lexeme= (++(lit));
+						--lit;
+						
+						++lit,++previous_lexeme,++next_lexeme;
+						++lit,++previous_lexeme,++next_lexeme;
+						
+						listfilo.pop_front(); // delete used saved position
+						cout << "Port checked"<< endl;
+						
+					}
+					else if ( ((*lit).getnature()).compare("std_logic_vector")== 0){
+						current_branche=arbre.append_child(previous_branche, *lit); 
+						previous_branche=current_branche;
+						++lit,++previous_lexeme,++next_lexeme;
+						
+						++lit,++previous_lexeme,++next_lexeme;
+						
+						current_branche=arbre.append_child(previous_branche, *lit); 
+						previous_branche=current_branche;
+						++lit,++previous_lexeme,++next_lexeme;
+						
+						current_branche=arbre.append_child(previous_branche, *lit); 
+						previous_branche=current_branche;
+						++lit,++previous_lexeme,++next_lexeme;
+						
+						current_branche=arbre.append_child(previous_branche, *lit); 
+						previous_branche=*listroot.begin();
+						
+						lit=*listfilo.begin(); // return to saved list position
+						previous_lexeme=(--(lit));
+						++lit;
+						next_lexeme= (++(lit));
+						--lit;
+						
+						++lit,++previous_lexeme,++next_lexeme;
+						++lit,++previous_lexeme,++next_lexeme;
+						
+						listfilo.pop_front(); // delete used saved position
+						cout << "Port checked"<< endl;
+						
+						// on est au point virgule
+						
+					}
+					
+					else {
+						cout << "error unknow data type at";// << "E";		
+						(*lit).getposition();
+						goto sortie_erreur;
+					}
+					
+				}
+				else if (( ((*lit).getnature()).compare("id")== 0) and ( ((*lit).getnom()).compare(entity_name)== 0)) {
+					listroot.pop_front();	// delete used save position
+					
+					previous_branche=*listroot.begin(); //  return to saved tree position -> suposed to be root_tree
+					++lit,++previous_lexeme,++next_lexeme;
+					++lit,++previous_lexeme,++next_lexeme;
+					break;
+				}
+				
+				else {
+					++lit,++previous_lexeme,++next_lexeme;
+				}
+			}// END OF CONSTRUCTION LOOP
+
+		finentity:;
+		cout << "Entity tree constructed"<< endl; 	
+		
+		} 
+
+//////////////////////////////////////////////// END ENTITY PROTOCOL /////////////////////////////////////////////////
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////dessous des exemples
 /*		else if ( ((*lit).getnature()).compare("use")== 0 ) {
