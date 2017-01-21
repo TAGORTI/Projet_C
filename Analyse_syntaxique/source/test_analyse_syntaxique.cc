@@ -78,31 +78,10 @@ listlexeme.push_back(lexeme("all","all",4,6));
 listlexeme.push_back(lexeme(";","endligne",4,7));
 
 
-listlexeme.push_back(lexeme("library","library",2,1));
-listlexeme.push_back(lexeme("ieee","id",2,2));
-listlexeme.push_back(lexeme(";","endligne",2,3));
-
-listlexeme.push_back(lexeme("use","use",3,1));
-listlexeme.push_back(lexeme("ieee","id",3,2));
-listlexeme.push_back(lexeme(".","point",3,3));
-listlexeme.push_back(lexeme("std_logic_1164","id",3,4));
-listlexeme.push_back(lexeme(".","point",3,5));
-listlexeme.push_back(lexeme("all","all",3,6));
-listlexeme.push_back(lexeme(";","endligne",3,7));
-
-listlexeme.push_back(lexeme("use","use",4,1));
-listlexeme.push_back(lexeme("ieee","id",4,2));
-listlexeme.push_back(lexeme(".","point",4,3));
-listlexeme.push_back(lexeme("numeric_std","id",4,4));
-listlexeme.push_back(lexeme(".","point",4,5));
-listlexeme.push_back(lexeme("all","all",4,6));
-listlexeme.push_back(lexeme(";","endligne",4,7));
-
-
 listlexeme.push_back(lexeme("entity","entity",6,1));
 listlexeme.push_back(lexeme("fsm","id",6,2));
 listlexeme.push_back(lexeme("is","is",6,3));
-/*
+
 listlexeme.push_back(lexeme("port","port",7,1));
 listlexeme.push_back(lexeme("(","parenthese_ouvrante",7,2));
 listlexeme.push_back(lexeme("clk","id",7,3));
@@ -166,7 +145,7 @@ listlexeme.push_back(lexeme(":","deux_points",16,2));
 listlexeme.push_back(lexeme("out","in",16,3));
 listlexeme.push_back(lexeme("std_logic_vector","std_logic_vector",16,4));
 listlexeme.push_back(lexeme("(","parenthese_ouvrante",16,5));
-listlexeme.push_back(lexeme("4","chifre",16,6));
+listlexeme.push_back(lexeme("4","chiffre",16,6));
 listlexeme.push_back(lexeme("downto","downto",16,7));
 listlexeme.push_back(lexeme("0","chiffre",16,8));
 listlexeme.push_back(lexeme(")","parenthese_fermante",16,9));
@@ -177,7 +156,7 @@ listlexeme.push_back(lexeme(":","deux_points",17,2));
 listlexeme.push_back(lexeme("out","in",17,3));
 listlexeme.push_back(lexeme("std_logic_vector","std_logic_vector",17,4));
 listlexeme.push_back(lexeme("(","parenthese_ouvrante",17,5));
-listlexeme.push_back(lexeme("4","chifre",17,6));
+listlexeme.push_back(lexeme("4","chiffre",17,6));
 listlexeme.push_back(lexeme("downto","downto",17,7));
 listlexeme.push_back(lexeme("0","chiffre",17,8));
 listlexeme.push_back(lexeme(")","parenthese_fermante",17,9));
@@ -199,7 +178,8 @@ listlexeme.push_back(lexeme("buff_oe","id",20,1));
 listlexeme.push_back(lexeme(":","deux_points",20,2));
 listlexeme.push_back(lexeme("out","in",20,3));
 listlexeme.push_back(lexeme("std_logic","std_logic",20,4));
-listlexeme.push_back(lexeme(";","endligne",20,5));
+listlexeme.push_back(lexeme(")","parenthese_fermante",20,5));
+listlexeme.push_back(lexeme(";","endligne",20,6));
 
 listlexeme.push_back(lexeme("end","endprocess",21,1));
 listlexeme.push_back(lexeme("fsm","id",21,2));
@@ -211,7 +191,7 @@ listlexeme.push_back(lexeme("behavior","id",24,2));
 listlexeme.push_back(lexeme("of","of",24,3));
 listlexeme.push_back(lexeme("fsm","id",24,4));
 listlexeme.push_back(lexeme("is","is",24,5));
-
+/*
 listlexeme.push_back(lexeme("type","type",25,1));
 listlexeme.push_back(lexeme("state","id",25,2));
 listlexeme.push_back(lexeme("is","is",25,3));

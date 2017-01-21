@@ -17,12 +17,12 @@ entity FSM is
        Delay_Line_Address   : out std_logic_vector(4 downto 0);
        Delay_Line_sample_shift  : out std_logic; -- registering 
        Accu_ctrl                : out std_logic; -
-       Buff_OE                  : out std_logic) ; --
+       Buff_OE                  : out std_logic ; --
 	   A,B			: in STD_LOGIC_VECTOR(7 downto 0) ;
 	   comparateur			: out std_logic;
 	   CMD			: in STD_LOGIC_VECTOR(3 downto 0) ;
 	   ADC_Eocb_bar         : out  std_logic;
-	   Filter_Out  : out std_logic_vector(7 downto 0)
+	   Filter_Out  : out std_logic_vector(7 downto 0));
 end FSM;
 
 
