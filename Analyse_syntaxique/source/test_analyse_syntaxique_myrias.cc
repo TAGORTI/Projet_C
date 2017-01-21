@@ -1,20 +1,18 @@
 //============================================================================
-// Name        : as.c
-// Author      : Valérian
-// Version     : 0.1
+// Author      : MYRIAS
+// Version     : v0.5 
 // Copyright   : PHELMA
 // Description : Module d'analyse syntaxique du projet C
 //============================================================================
 
 
+#include "..\librairie\lexeme.hh"
+#include "..\librairie\analyse_syntaxique.hh" //analyse synthaxique
+#include "..\librairie\tree.hh"
 
-//#include "..\librairie\lexeme.hh"
-//#include "..\librairie\analyse_syntaxique.hh" //analyse synthaxique
-//#include "..\librairie\tree.hh"
-
-#include "lexeme.hh"
-#include "analyse_syntaxique.hh" //analyse synthaxique
-#include "tree.hh"
+//#include "lexeme.hh"
+//#include "analyse_syntaxique.hh" //analyse synthaxique
+//#include "tree.hh"
 
 
 #include <iostream>
@@ -60,11 +58,11 @@ int main() {
 list<lexeme> listlexeme;// = creer_liste ;//  list de lexeme
 
 listlexeme.push_back(lexeme("library","library",2,1));
-listlexeme.push_back(lexeme("IAEE","id",2,2));
+listlexeme.push_back(lexeme("ieee","id",2,2));
 listlexeme.push_back(lexeme(";","endligne",2,3));
 
 listlexeme.push_back(lexeme("use","use",3,1));
-listlexeme.push_back(lexeme("IBEE","id",3,2));
+listlexeme.push_back(lexeme("ieee","id",3,2));
 listlexeme.push_back(lexeme(".","point",3,3));
 listlexeme.push_back(lexeme("std_logic_1164","id",3,4));
 listlexeme.push_back(lexeme(".","point",3,5));
@@ -72,17 +70,39 @@ listlexeme.push_back(lexeme("all","all",3,6));
 listlexeme.push_back(lexeme(";","endligne",3,7));
 
 listlexeme.push_back(lexeme("use","use",4,1));
-listlexeme.push_back(lexeme("iCee","id",4,2));
+listlexeme.push_back(lexeme("ieee","id",4,2));
 listlexeme.push_back(lexeme(".","point",4,3));
 listlexeme.push_back(lexeme("numeric_std","id",4,4));
 listlexeme.push_back(lexeme(".","point",4,5));
 listlexeme.push_back(lexeme("all","all",4,6));
 listlexeme.push_back(lexeme(";","endligne",4,7));
-/*
+
+
+listlexeme.push_back(lexeme("library","library",2,1));
+listlexeme.push_back(lexeme("ieee","id",2,2));
+listlexeme.push_back(lexeme(";","endligne",2,3));
+
+listlexeme.push_back(lexeme("use","use",3,1));
+listlexeme.push_back(lexeme("ieee","id",3,2));
+listlexeme.push_back(lexeme(".","point",3,3));
+listlexeme.push_back(lexeme("std_logic_1164","id",3,4));
+listlexeme.push_back(lexeme(".","point",3,5));
+listlexeme.push_back(lexeme("all","all",3,6));
+listlexeme.push_back(lexeme(";","endligne",3,7));
+
+listlexeme.push_back(lexeme("use","use",4,1));
+listlexeme.push_back(lexeme("ieee","id",4,2));
+listlexeme.push_back(lexeme(".","point",4,3));
+listlexeme.push_back(lexeme("numeric_std","id",4,4));
+listlexeme.push_back(lexeme(".","point",4,5));
+listlexeme.push_back(lexeme("all","all",4,6));
+listlexeme.push_back(lexeme(";","endligne",4,7));
+
+
 listlexeme.push_back(lexeme("entity","entity",6,1));
 listlexeme.push_back(lexeme("fsm","id",6,2));
 listlexeme.push_back(lexeme("is","is",6,3));
-
+/*
 listlexeme.push_back(lexeme("port","port",7,1));
 listlexeme.push_back(lexeme("(","parenthese_ouvrante",7,2));
 listlexeme.push_back(lexeme("clk","id",7,3));
@@ -468,13 +488,16 @@ get_arbre_primaire(listlexeme,arbre);
 
 //arbre.erase_children(arbre.begin());
 
+cout << endl << "Lexeme TREE"<< endl << endl;
 afficher_arbre(arbre);
 
+
+cout << endl << "Lexeme LIST"<< endl << endl;
+
+afficher_liste(listlexeme);
 cin.get();
 
 (*(listlexeme.begin())).getposition();
-
-afficher_liste(listlexeme);
 
 }
 
@@ -513,7 +536,7 @@ cout << listlexeme<1>.getrole()<<endl;
 //arbre = get_arbre_primaire (listlexeme);
 
 
-//Puis la vérification de l'arbre en le comparent
+//Puis la v�rification de l'arbre en le comparent
 /*
 Comparing trees While the STL equal algorithm can be used to compare the values of the
 nodes in two different trees, it does not know about the structure of the tree. If you want
@@ -538,3 +561,4 @@ There is also an equal subtree algorithm which takes only two iterators, pointin
 
  table<1>
 */
+

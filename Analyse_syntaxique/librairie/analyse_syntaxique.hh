@@ -1,3 +1,10 @@
+//============================================================================
+// Author      : MYRIAS
+// Version     : v0.5 
+// Copyright   : PHELMA
+// Description : Module d'analyse syntaxique du projet C
+//============================================================================
+
 #ifndef _ANALYSE_SYNTAXIQUE_H_
 #define _ANALYSE_SYNTAXIQUE_H_
 
@@ -25,6 +32,6 @@ void get_arbre_primaire( list<lexeme> & list, tree<lexeme> & arbre);
 
 //void get_arbre_primaire( list<lexeme> & list, tree<lexeme> & arbre);
 
-void recursive_action( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::const_iterator & lit, list<lexeme>::const_iterator & lend, list<lexeme>::const_iterator & previous_lexeme, tree<lexeme>::iterator & previous_branche, tree<lexeme>::iterator & current_branche, /*tree<lexeme>::iterator & root*/ list<tree<lexeme>::iterator> listroot);
+void recursive_action( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::iterator & lit, list<lexeme>::iterator & lend, list<lexeme>::iterator & previous_lexeme, tree<lexeme>::iterator & previous_branche, tree<lexeme>::iterator & current_branche, list<tree<lexeme>::iterator> & listroot, list<list<lexeme>::iterator> & listfilo, list<lexeme>::iterator & next_lexeme);
 
 #endif

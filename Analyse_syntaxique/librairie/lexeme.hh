@@ -1,3 +1,10 @@
+//============================================================================
+// Author      : MYRIAS
+// Version     : v0.5 
+// Copyright   : PHELMA
+// Description : Module d'analyse syntaxique du projet C
+//============================================================================
+
 #ifndef _LEXEME_H_
 #define _LEXEME_H_
 
