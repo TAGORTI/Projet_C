@@ -462,6 +462,10 @@ listlexeme.push_back(lexeme(";","endligne",155,3));
 ///////afficher_liste(listlexeme);
 
 
+//list<lexeme> listlexeme;// = creer_liste ;//  list de lexeme
+
+//get_liste_lexeme(fichier);
+
 tree<lexeme> arbre ;
 
 get_arbre_primaire(listlexeme,arbre);

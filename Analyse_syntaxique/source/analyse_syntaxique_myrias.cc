@@ -95,6 +95,263 @@ void func1(){}
 	}
 */ 
 
+/////////////////////////////////////////// PROCESS PROTOCOL /////////////////////////////////////////
+bool archi_begin_process_protocol (list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::iterator & lit, list<lexeme>::iterator & lend, list<lexeme>::iterator & previous_lexeme, tree<lexeme>::iterator & previous_branche, tree<lexeme>::iterator & current_branche, list<tree<lexeme>::iterator> & listroot, list<list<lexeme>::iterator> & listfilo, list<lexeme>::iterator & next_lexeme, string architecture_name){
+	bool error_bit=0;
+	
+			string process_name=(*lit).getnom(); //Saving the name for checking
+//			listfilo.push_front(lit); // save list position	
+			
+			current_branche=arbre.append_child(previous_branche, *(++next_lexeme); //Lexem is process
+			--next_lexeme;
+			previous_branche=current_branche;
+			listroot.push_front(current_branche);
+			
+			current_branche=arbre.append_child(previous_branche, *(lit); //Lexem is process's name
+			previous_branche=*listroot.begin();
+			//previous_branche=*listroot.begin();
+
+			++lit,++previous_lexeme,++next_lexeme;
+			// ICI on est au deux points
+			
+			// VERIFIER LA LISTE DE SENSIBILITE  puis BEGIN et instructions sequentielles 4 cas.
+			
+			for(;lit!=lend;){
+
+				if ( ((*lit).getnature()).compare("endligne")== 0) {  //authorized lexeme and test exit
+
+					
+					if ( ((*previous_lexeme).getnom()).compare(process_name)==0 and ((*previous_lexeme).getnature()).compare("id")==0 and ((*(--previous_lexeme)).getnature()).compare("process")==0  and ((*(--previous_lexeme)).getnature()).compare("endprocess")==0 ){   
+					// test exit
+						++previous_lexeme; ++previous_lexeme; // compensate the iteration done in the condition
+					//	cout << (*next_lexeme).getnom()<< endl;
+//						lit=*listfilo.begin(); // return to saved list position
+//						previous_lexeme=(--(lit));
+//						++lit;
+//						next_lexeme= (++(lit));
+//						--lit;
+//						cout << (*lit).getnom()<< endl;
+//						cout << (*previous_lexeme).getnom()<< endl;
+
+//						listfilo.pop_front(); // delete used saved position
+						listroot.pop_front(); // delete process position
+						previous_branche=*listroot.begin();// supposed to return to architecture
+						
+						cout << "Protocol checked"<< endl;
+						goto fin_protocol; // exit loop
+						
+					}
+
+					else {    // unauthorized previous lexeme
+						cout << "error at specified lexem";		
+						(*previous_lexeme).getposition();
+						error_bit=1;
+						goto sortie_erreur_protocol;
+					}
+				}	
+				
+				else if ( ((*lit).getnature()).compare("id")== 0) { //authorized lexeme
+					if (((*previous_lexeme).getnature()).compare("endprocess")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}					
+					else {
+						cout << "error at specified lexem"; 		
+						(*previous_lexeme).getposition();
+						error_bit=1;
+						goto sortie_erreur_protocol;
+					}
+							
+				}
+				
+				else { //  unauthorized lexeme
+					cout << "error at specified lexem";// << "E";		
+					(*lit).getposition();
+					error_bit=1;
+					goto sortie_erreur_protocol;
+				}
+			}
+			fin_protocol:;
+					////////////////////////////////// TREE IS CONSTRUCTED DURING VERIFICATION ////////////////////////////////////
+			sortie_erreur_protocol:;
+			if (error_bit==1){
+				return 1;
+			}
+			else {return 0;
+			}
+			
+}
+///////////////////////////////////////////// END PROCESS PROTOCOL /////////////////////////////////////
+
+//////////////////////////////////////////// ARCHITECTURE BEGIN PROTOCOL /////////////////////////////////////
+bool archi_begin_protocol (list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::iterator & lit, list<lexeme>::iterator & lend, list<lexeme>::iterator & previous_lexeme, tree<lexeme>::iterator & previous_branche, tree<lexeme>::iterator & current_branche, list<tree<lexeme>::iterator> & listroot, list<list<lexeme>::iterator> & listfilo, list<lexeme>::iterator & next_lexeme, string architecture_name){
+	bool error_bit=0;
+	
+//			listfilo.push_front(lit); // save list position	
+			++lit,++previous_lexeme,++next_lexeme;
+			
+			for(;lit!=lend;){
+
+				if ( ((*lit).getnature()).compare("endligne")== 0) {  //authorized lexeme and test exit
+
+					
+					if ( ((*previous_lexeme).getnom()).compare(architecture_name)==0 and ((*previous_lexeme).getnature()).compare("id")==0 and ((*(--previous_lexeme)).getnature()).compare("endprocess")==0  ){   // test exit
+						++previous_lexeme; // compensate the iteration done in the condition
+					//	cout << (*next_lexeme).getnom()<< endl;
+//						lit=*listfilo.begin(); // return to saved list position
+//						previous_lexeme=(--(lit));
+//						++lit;
+//						next_lexeme= (++(lit));
+//						--lit;
+//						cout << (*lit).getnom()<< endl;
+//						cout << (*previous_lexeme).getnom()<< endl;
+
+//						listfilo.pop_front(); // delete used saved position
+						cout << "Architecture checked & constructed"<< endl;
+						listroot.pop_front(); // supposed to delete architecture save point as it is here ended
+						previous_branche=*listroot.begin(); // supposed to be root tree (and open for a new architecture declaration)
+						
+						goto fin_archi_begin; // exit loop
+						
+					}
+
+					else {    // unauthorized previous lexeme
+						cout << "error at specified lexem";		
+						(*previous_lexeme).getposition();
+						error_bit=1;
+						goto sortie_erreur_archi_begin;
+					}
+				}	
+				
+				else if ( ((*lit).getnature()).compare("id")== 0) { //authorized lexeme
+					if (((*previous_lexeme).getnature()).compare("endprocess")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}					
+					else {
+						cout << "error at specified lexem"; 		
+						(*previous_lexeme).getposition();
+						error_bit=1;
+						goto sortie_erreur_archi_begin;
+					}
+							
+				}
+				
+				else if ( ((*lit).getnature()).compare("endprocess")== 0) { //authorized lexeme
+					if (((*previous_lexeme).getnature()).compare("endligne")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+					else if (((*previous_lexeme).getnature()).compare("is")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+					else {
+						cout << "error at specified lexem"; 		
+						(*previous_lexeme).getposition();
+						error_bit=1;
+						goto sortie_erreur_archi_begin;
+					}
+							
+				}
+				
+
+
+				else if ( ((*lit).getnature()).compare("id")== 0 and ((*next_lexeme).getnature()).compare("deux_points")== 0 and ((*(++next_lexeme)).getnature()).compare("process")== 0) { 
+				//authorized lexeme PROCESS
+					--next_lexeme; // compensate the iteration done in the condition
+					if (((*previous_lexeme).getnature()).compare("endligne")== 0){
+						
+						error_bit=archi_begin_process_protocol( l, arbre, lit, lend, previous_lexeme, previous_branche, current_branche,listroot, listfilo, next_lexeme, architecture_name);///////////////// PARTIR DANS UNE FONCTION qui retourne error bit
+						
+						if (error_bit==1) {
+							goto sortie_erreur_archi_begin;	
+						}
+						else {
+							++lit,++previous_lexeme,++next_lexeme; 
+						}
+					}
+					
+					else if (((*previous_lexeme).getnature()).compare("begin")== 0){
+						
+						error_bit=archi_begin_process_protocol( l, arbre, lit, lend, previous_lexeme, previous_branche, current_branche,listroot, listfilo, next_lexeme, architecture_name);;///////////////// PARTIR DANS UNE FONCTION qui retourne error bit
+						
+						if (error_bit==1) {
+							goto sortie_erreur_archi_begin;	
+						}
+						else {
+							++lit,++previous_lexeme,++next_lexeme; 
+						}
+					}
+					
+					else {
+						cout << "error at specified lexem"; 		
+						(*previous_lexeme).getposition();
+						error_bit=1;
+						goto sortie_erreur_archi_begin;
+					}
+							
+				}
+				
+				else if ( ((*lit).getnature()).compare("id")== 0 and ((*next_lexeme).getnature()).compare("assignation")== 0) { 
+				//authorized lexeme Affectation Concurrente de signal BONUS
+					//////////////// A FAIRE BONUS ///////////////////////////////
+/*					if (((*previous_lexeme).getnature()).compare("endprocess")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+					
+					else if (((*previous_lexeme).getnature()).compare("of")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+					
+					else {
+						cout << "error at specified lexem"; 		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}
+*/					++lit,++previous_lexeme,++next_lexeme;		
+				}
+
+				else if ( ((*lit).getnature()).compare("id")== 0 and ((*next_lexeme).getnature()).compare("deux_points")== 0 and ((*(++next_lexeme)).getnature()).compare("id")== 0) { 
+				//authorized lexeme Instantiation explicite de composant
+				--next_lexeme; // compensate the iteration done in the condition
+				///////////////// A FAIRE
+					if (((*previous_lexeme).getnature()).compare("endligne")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+					
+					else if (((*previous_lexeme).getnature()).compare("begin")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+					
+					else {
+						cout << "error at specified lexem"; 		
+						(*previous_lexeme).getposition();
+						error_bit=1;
+						goto sortie_erreur_archi_begin;
+					}
+							
+				}
+				
+				else { //  unauthorized lexeme
+					cout << "error at specified lexem";// << "E";		
+					(*lit).getposition();
+					error_bit=1;
+					goto sortie_erreur_archi_begin;
+				}
+		
+			}
+	
+			fin_archi_begin:;
+			
+			////////////////////////////////// TREE IS CONSTRUCTED DURING VERIFICATION ////////////////////////////////////
+			
+			sortie_erreur_archi_begin:;
+			if (error_bit==1){
+				return 1;
+			}
+			else {return 0;
+			}
+}
+
+/////////////////////////////////////////// END OF ARCHITECTURE BEGIN PROTOCOL /////////////////////////////////////////
+
 /////////////////////////////////////////// GET TREE FUNCTION ////////////////////////////////////
 void get_arbre_primaire( list<lexeme> & l, tree<lexeme> & arbre){
 
@@ -140,26 +397,8 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::it
 
 	for(;lit!=lend;){  // master  loop
 
-		if ( ((*lit).getnature()).compare("endprocess")== 0) {
-/*
-
-			current_branche=arbre.insert_after(previous_branche, *lit);
-			previous_branche=*listroot.begin(); // return to saved tree position
-
-			//cout << listroot.size();
-			if (listroot.size()==0){
-				cout << "erreur il y a un end de trop" << endl;
-				goto sortie_erreur;
-			}
-			else {
-				listroot.pop_front();
-			}
-*/
-			++lit,++previous_lexeme,++next_lexeme;
-		}
-
 //////////////////////////////////////// LIBRARY PROTOCOL ///////////////////////////////////////////////////////////
-		else if ( ((*lit).getnature()).compare("library")== 0 ) { 
+		if ( ((*lit).getnature()).compare("library")== 0 ) { 
 			
 			listfilo.push_front(lit); // save list position	
 			++lit,++previous_lexeme,++next_lexeme;
@@ -342,7 +581,8 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::it
 				if ( ((*lit).getnature()).compare("endligne")== 0) {  //authorized lexeme
 
 					
-					if ( ((*previous_lexeme).getnom()).compare(entity_name)==0 and ((*previous_lexeme).getnature()).compare("id")==0  ){   // test exit
+					if ( ((*previous_lexeme).getnom()).compare(entity_name)==0 and ((*previous_lexeme).getnature()).compare("id")==0 and ((*(--previous_lexeme)).getnature()).compare("endprocess")==0  ){   // test exit
+						++previous_lexeme; // compensate iteration done in the condition
 					//	cout << (*next_lexeme).getnom()<< endl;
 						lit=*listfilo.begin(); // return to saved list position
 						previous_lexeme=(--(lit));
@@ -780,7 +1020,7 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::it
 						listfilo.pop_front(); // delete used saved position
 						cout << "Port checked"<< endl;
 						
-						// on est au point virgule
+						
 						
 					}
 					
@@ -795,6 +1035,7 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::it
 					listroot.pop_front();	// delete used save position
 					
 					previous_branche=*listroot.begin(); //  return to saved tree position -> suposed to be root_tree
+					//cout << (*previous_branche).getnom(); // use to confime tree position
 					++lit,++previous_lexeme,++next_lexeme;
 					++lit,++previous_lexeme,++next_lexeme;
 					break;
@@ -808,10 +1049,276 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::it
 		finentity:;
 		cout << "Entity tree constructed"<< endl; 	
 		
+		
+//		cout << (*previous_branche).getnom();
 		} 
 
 //////////////////////////////////////////////// END ENTITY PROTOCOL /////////////////////////////////////////////////
 
+//////////////////////////////////////////////////// ARCHITECTURE PROTOCOL ///////////////////////////////////////////
+
+		else if ( ((*lit).getnature()).compare("architecture")== 0 ) { 
+		
+			bool error_bit=0;
+			
+			listfilo.push_front(lit); // save list position	
+			
+			current_branche=arbre.append_child(previous_branche, *lit); //Lexem is ARCHITECTURE
+			previous_branche=current_branche;
+			listroot.push_front(current_branche);
+			//cout << (*current_branche).getnom();
+			
+			++lit,++previous_lexeme,++next_lexeme;
+			string architecture_name=(*lit).getnom(); //Saving the name for checking
+//			int parenthese_count = 0;
+			current_branche=arbre.append_child(previous_branche, *lit); //Lexem is architecture name
+			previous_branche=current_branche;
+
+			++next_lexeme;
+			string entity_name=(*next_lexeme).getnom();
+			
+			current_branche=arbre.append_child(previous_branche, *next_lexeme); //Lexem is entity name
+			previous_branche=*listroot.begin();
+			
+			--next_lexeme;
+			int archi_begin_count = 0;
+
+			for(;lit!=lend;){  
+			
+//				if ( ((*lit).getnature()).compare("endligne")== 0) {  //authorized lexeme // Took into acount in the archi_begin_protocol
+//
+//					
+//					if ( ((*previous_lexeme).getnom()).compare(architecture_name)==0 and ((*previous_lexeme).getnature()).compare("id")==0 and ((*(--previous_lexeme)).getnature()).compare("endprocess")==0  ){   // test exit
+//						++previous_lexeme; // compensate the iteration done in the condition
+//					//	cout << (*next_lexeme).getnom()<< endl;
+//						lit=*listfilo.begin(); // return to saved list position
+//						previous_lexeme=(--(lit));
+//						++lit;
+//						next_lexeme= (++(lit));
+//						--lit;
+//						cout << (*lit).getnom()<< endl;
+//						cout << (*previous_lexeme).getnom()<< endl;
+//
+//						listfilo.pop_front(); // delete used saved position
+//						if (parenthese_count==0){
+//							cout << "Architecture checked"<< endl;
+//							goto arbriser_architecture; // exit loop
+//						}
+//						else {
+//							cout << "error of number of parenthese in ENTITY definition "  << parenthese_count;	
+//							goto sortie_erreur;
+//						}
+//					}
+//
+//					else {    // unauthorized previous lexeme
+//						cout << "error at specified lexem";		
+//						(*previous_lexeme).getposition();
+//						goto sortie_erreur;
+//					}
+//				}	
+//
+
+				if ( ((*lit).getnature()).compare("id")== 0) { //authorized lexeme
+//					if (((*previous_lexeme).getnature()).compare("endprocess")== 0){   // Took into acount in the archi_begin_protocol
+//						++lit,++previous_lexeme,++next_lexeme;
+//					}
+					
+					if (((*previous_lexeme).getnature()).compare("architecture")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+					
+					else if (((*previous_lexeme).getnature()).compare("of")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+					
+					else {
+						cout << "error at specified lexem"; 		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}
+							
+				}
+				
+//				else if ( ((*lit).getnature()).compare("endprocess")== 0) { //authorized lexeme // Took into acount in the archi_begin_protocol
+//					if (((*previous_lexeme).getnature()).compare("endligne")== 0){
+//						++lit,++previous_lexeme,++next_lexeme;
+//					}
+//					else if (((*previous_lexeme).getnature()).compare("is")== 0){
+//						++lit,++previous_lexeme,++next_lexeme;
+//					}
+//					else {
+//						cout << "error at specified lexem"; 		
+//						(*previous_lexeme).getposition();
+//						goto sortie_erreur;
+//					}
+//							
+//				}
+//
+				else if ( ((*lit).getnature()).compare("is")== 0) { //authorized lexeme
+					if (((*previous_lexeme).getnature()).compare("id")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+					else {
+						cout << "error at specified lexem"; 		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}
+							
+				}
+
+				else if ( ((*lit).getnature()).compare("of")== 0) { //authorized lexeme
+					if (((*previous_lexeme).getnature()).compare("id")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+					else {
+						cout << "error at specified lexem"; 		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}
+							
+				}
+
+				else if ( ((*lit).getnature()).compare("type")== 0) { //authorized lexeme
+				//////////////INTERIEUR A FAIRE    PARTIR DANS UNE FONCTION
+					if (((*previous_lexeme).getnature()).compare("endligne")== 0){
+						error_bit=0;///////////////// PARTIR DANS UNE FONCTION qui retourne error bit
+						++lit,++previous_lexeme,++next_lexeme;
+						if (error_bit==1) {
+//							cout << "error at specified lexem"; // Took into acount in the function		
+//							(*previous_lexeme).getposition();
+							goto sortie_erreur;	
+						}
+						
+					}
+					else if (((*previous_lexeme).getnature()).compare("is")== 0){
+						error_bit=0;///////////////// PARTIR DANS UNE FONCTION qui retourne error bit
+						++lit,++previous_lexeme,++next_lexeme;
+						if (error_bit==1) {
+//							cout << "error at specified lexem"; 	// Took into acount in the function	
+//							(*previous_lexeme).getposition();
+							goto sortie_erreur;	
+						}
+					}
+					else {
+						cout << "error at specified lexem"; 		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}
+							
+				}
+
+				else if ( ((*lit).getnature()).compare("signal")== 0) { //authorized lexeme
+				//////////////INTERIEUR A FAIRE    PARTIR DANS UNE FONCTION
+					if (((*previous_lexeme).getnature()).compare("endligne")== 0){
+						error_bit=0;///////////////// PARTIR DANS UNE FONCTION qui retourne error bit
+						++lit,++previous_lexeme,++next_lexeme;
+						if (error_bit==1) {
+//							cout << "error at specified lexem"; 	// Took into acount in the function
+//							(*previous_lexeme).getposition();
+							goto sortie_erreur;	
+						}
+					}
+					else if (((*previous_lexeme).getnature()).compare("is")== 0){
+						error_bit=0;///////////////// PARTIR DANS UNE FONCTION qui retourne error bit
+						++lit,++previous_lexeme,++next_lexeme;
+						if (error_bit==1) {
+//							cout << "error at specified lexem"; // Took into acount in the function	
+//							(*previous_lexeme).getposition();
+							goto sortie_erreur;	
+						}
+					}
+					else {
+						cout << "error at specified lexem"; 		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}
+							
+				}
+
+				else if ( ((*lit).getnature()).compare("component")== 0) { //authorized lexeme
+				//////////////INTERIEUR A FAIRE    PARTIR DANS UNE FONCTION
+					if (((*previous_lexeme).getnature()).compare("endligne")== 0){
+						error_bit=0;///////////////// PARTIR DANS UNE FONCTION qui retourne error bit
+						++lit,++previous_lexeme,++next_lexeme;
+						if (error_bit==1) {
+//							cout << "error at specified lexem"; 		// Took into acount in the function
+//							(*previous_lexeme).getposition();
+							goto sortie_erreur;	
+						}
+					}
+					else if (((*previous_lexeme).getnature()).compare("is")== 0){
+						error_bit=0;///////////////// PARTIR DANS UNE FONCTION qui retourne error bit
+						++lit,++previous_lexeme,++next_lexeme;
+						if (error_bit==1) {
+//							cout << "error at specified lexem"; // Took into acount in the function	
+//							(*previous_lexeme).getposition();
+							goto sortie_erreur;	
+						}
+					}
+					else {
+						cout << "error at specified lexem"; 		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}
+							
+				}
+
+				else if ( ((*lit).getnature()).compare("begin")== 0) { //authorized lexeme
+					if (((*previous_lexeme).getnature()).compare("endligne")== 0){
+						++archi_begin_count;
+						error_bit=archi_begin_protocol( l, arbre, lit, lend, previous_lexeme, previous_branche, current_branche,listroot, listfilo, next_lexeme, architecture_name);;///////////////// PARTIR DANS UNE FONCTION qui retourne error bit
+						// here lit should be equal lend;
+//						++lit,++previous_lexeme,++next_lexeme; 
+						if (error_bit==1) {
+//							cout << "error at specified lexem"; // Took into acount in the archi_begin_protocol		
+//							(*previous_lexeme).getposition();
+							goto sortie_erreur;	
+						}
+						else {
+//							cout << "Architecture checked"<< endl; // Took into acount in the archi_begin_protocol
+							goto fin_architecture; //EXIT
+						}
+					}
+					else if (((*previous_lexeme).getnature()).compare("is")== 0){
+						++archi_begin_count;
+						error_bit=archi_begin_protocol( l, arbre, lit, lend, previous_lexeme, previous_branche, current_branche,listroot, listfilo, next_lexeme, architecture_name);;///////////////// PARTIR DANS UNE FONCTION qui retourne error bit
+						// here lit should be equal lend;
+//						++lit,++previous_lexeme,++next_lexeme;
+						if (error_bit==1) {
+//							cout << "error at specified lexem"; // Took into acount in the archi_begin_protocol		
+//							(*previous_lexeme).getposition();
+							goto sortie_erreur;	
+						}
+						else {
+//							cout << "Architecture checked"<< endl; // Took into acount in the archi_begin_protocol
+							goto fin_architecture; //EXIT
+						}
+					}
+					else {
+						cout << "error at specified lexem"; 		
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}
+							
+				}
+				else { //  unauthorized lexeme
+					cout << "error at specified lexem";// << "E";		
+					(*lit).getposition();
+					if (archi_begin_count !=1){
+						cout << "missing a begin in architecture or error occured before it";
+					}
+					goto sortie_erreur;
+				}
+
+			} // END OF VERIFICATION LOOP
+
+			////////////////////////////////// TREE IS CONSTRUCTED DURING VERIFICATION ////////////////////////////////////
+			
+			fin_architecture:;
+			cout << "Architecture tree constructed"<< endl; 			
+		}
+
+/////////////////////////////////////////////END ARCHITECTURE PROTOCOL ////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////////////////dessous des exemples
 /*		else if ( ((*lit).getnature()).compare("use")== 0 ) {
