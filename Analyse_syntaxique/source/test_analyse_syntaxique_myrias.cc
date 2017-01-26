@@ -6,13 +6,13 @@
 //============================================================================
 
 
-#include "..\librairie\lexeme.hh"
-#include "..\librairie\analyse_syntaxique.hh" //analyse synthaxique
-#include "..\librairie\tree.hh"
+//#include "..\librairie\lexeme.hh"
+//#include "..\librairie\analyse_syntaxique.hh" //analyse synthaxique
+//#include "..\librairie\tree.hh"
 
-//#include "lexeme.hh"
-//#include "analyse_syntaxique.hh" //analyse synthaxique
-//#include "tree.hh"
+#include "lexeme.hh"
+#include "analyse_syntaxique.hh" //analyse synthaxique
+#include "tree.hh"
 
 
 #include <iostream>
@@ -277,9 +277,9 @@ listlexeme.push_back(lexeme("downto","downto",31,7));
 listlexeme.push_back(lexeme("0","chiffre",31,8));
 listlexeme.push_back(lexeme(")","parenthese_fermante",31,9));
 listlexeme.push_back(lexeme(";","endligne",31,10));
-
+*/
 listlexeme.push_back(lexeme("begin","begin",33,1));
-
+/*
 listlexeme.push_back(lexeme("p_state","id",36,1));
 listlexeme.push_back(lexeme(":","deux_points",36,2));
 listlexeme.push_back(lexeme("process","process",36,3));
@@ -353,7 +353,7 @@ listlexeme.push_back(lexeme("end","endprocess",45,1));
 listlexeme.push_back(lexeme("process","process",45,2));
 listlexeme.push_back(lexeme("p_state","id",45,3));
 listlexeme.push_back(lexeme(";","endligne",45,4));
-
+*/
 listlexeme.push_back(lexeme("p_fsm","id",48,1));
 listlexeme.push_back(lexeme(":","deux_points",48,2));
 listlexeme.push_back(lexeme("process","process",48,3));
@@ -367,8 +367,71 @@ listlexeme.push_back(lexeme(",","virgule",48,10));
 listlexeme.push_back(lexeme("counter_j","id",48,11));
 listlexeme.push_back(lexeme(")","parenthese_fermante",48,12));
 
-listlexeme.push_back(lexeme("begin","begin",49,1));
+listlexeme.push_back(lexeme("variable","variable",49,1));
+listlexeme.push_back(lexeme("t","id",49,2));
+listlexeme.push_back(lexeme(":","deux_points",49,3));
+listlexeme.push_back(lexeme("time","time",49,4));
+listlexeme.push_back(lexeme(";","endligne",49,5));
 
+listlexeme.push_back(lexeme("variable","variable",50,1));
+listlexeme.push_back(lexeme("height","id",50,2));
+listlexeme.push_back(lexeme(":","deux_points",50,3));
+listlexeme.push_back(lexeme("integer","integer",50,4));
+listlexeme.push_back(lexeme(":=","variable_egale",50,5));
+listlexeme.push_back(lexeme("8","chiffre",50,6));
+listlexeme.push_back(lexeme(";","endligne",50,7));
+
+listlexeme.push_back(lexeme("variable","variable",51,1));
+listlexeme.push_back(lexeme("cond","id",51,2));
+listlexeme.push_back(lexeme(":","deux_points",51,3));
+listlexeme.push_back(lexeme("boolean","boolean",51,4));
+listlexeme.push_back(lexeme(":=","variable_egale",51,5));
+listlexeme.push_back(lexeme("true","true",51,6));
+listlexeme.push_back(lexeme(";","endligne",51,7));
+
+listlexeme.push_back(lexeme("variable","variable",52,1));
+listlexeme.push_back(lexeme("in_string","id",52,2));
+listlexeme.push_back(lexeme(":","deux_points",52,3));
+listlexeme.push_back(lexeme("string","string",52,4));
+listlexeme.push_back(lexeme("(","parenthese_ouvrante",52,5));
+listlexeme.push_back(lexeme("1","chiffre",52,6));
+listlexeme.push_back(lexeme("to","to",52,7));
+listlexeme.push_back(lexeme("80","nombre",52,8));
+listlexeme.push_back(lexeme(")","parenthese_fermante",52,9));
+listlexeme.push_back(lexeme(";","endligne",52,10));
+
+listlexeme.push_back(lexeme("variable","variable",53,1));
+listlexeme.push_back(lexeme("m","id",53,2));
+listlexeme.push_back(lexeme(",","virgule",53,3));
+listlexeme.push_back(lexeme("n","id",53,4));
+listlexeme.push_back(lexeme(":","deux_points",53,5));
+listlexeme.push_back(lexeme("bit","bit",53,6));
+listlexeme.push_back(lexeme(":=","variable_egale",53,7));
+listlexeme.push_back(lexeme("'","apostrophe",53,8));
+listlexeme.push_back(lexeme("1","chiffre",53,9));
+listlexeme.push_back(lexeme("'","apostrophe",53,10));
+listlexeme.push_back(lexeme(";","endligne",53,11));
+
+listlexeme.push_back(lexeme("variable","variable",54,1));
+listlexeme.push_back(lexeme("i","id",54,2));
+listlexeme.push_back(lexeme(":","deux_points",54,3));
+listlexeme.push_back(lexeme("integer","integer",54,4));
+listlexeme.push_back(lexeme("range","range",54,5));
+listlexeme.push_back(lexeme("0","chiffre",54,6));
+listlexeme.push_back(lexeme("to","to",54,7));
+listlexeme.push_back(lexeme("3","chiffre",54,8));
+listlexeme.push_back(lexeme(";","endligne",54,9));
+
+//	variable t : time;
+//	variable HEIGHT : integer := 8;
+//	variable COND : boolean := true;
+//	variable IN_STRING : string(1 to 80);
+//	variable M,N : bit := '1';
+//	variable I : integer range 0 to 3; 
+
+
+listlexeme.push_back(lexeme("begin","begin",55,1));
+/*
 listlexeme.push_back(lexeme("case","case",50,1));
 listlexeme.push_back(lexeme("current_state","id",50,2));
 listlexeme.push_back(lexeme("is","is",50,3));
@@ -444,7 +507,7 @@ listlexeme.push_back(lexeme(";","endligne",150,7));
 listlexeme.push_back(lexeme("end","endprocess",153,1));
 listlexeme.push_back(lexeme("case","case",153,2));
 listlexeme.push_back(lexeme(";","endligne",153,3));
-
+*/
 listlexeme.push_back(lexeme("end","endprocess",154,1));
 listlexeme.push_back(lexeme("process","process",154,2));
 listlexeme.push_back(lexeme("p_fsm","id",154,3));
@@ -452,9 +515,9 @@ listlexeme.push_back(lexeme(";","endligne",154,4));
 
 listlexeme.push_back(lexeme("end","endprocess",155,1));
 listlexeme.push_back(lexeme("behavior","id",155,2));
-listlexeme.push_back(lexeme(";","endligne",155,3));
+listlexeme.push_back(lexeme("bla","endligne",155,3));
 
-*/
+
 
 
 
@@ -520,7 +583,7 @@ cout << listlexeme<1>.getrole()<<endl;
 //arbre = get_arbre_primaire (listlexeme);
 
 
-//Puis la vérification de l'arbre en le comparent
+//Puis la v\E9rification de l'arbre en le comparent
 /*
 Comparing trees While the STL equal algorithm can be used to compare the values of the
 nodes in two different trees, it does not know about the structure of the tree. If you want
