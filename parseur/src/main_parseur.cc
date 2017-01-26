@@ -13,18 +13,11 @@
 #include <map>
 using namespace std;
 
-int main (){
+int main (int argc, char *argv[]){
  list<lexeme> listlexeme;
-parser( listlexeme);
-cout<<listlexeme.size()<<endl;
-
-       /* lit (listlexeme.begin()),
-        lend(listlexeme.end());
-
-  cout<<listlexeme.size()<<endl;
-    for(;lit!=lend;++lit) 
-	{
-	cout << (*lit).getnom() << ' ' << (*lit).getnature() << ' ' << (*lit).getrole()<< endl;
-    }*/
+ string file_name;
+ file_name=argv[1];
+parser(listlexeme,file_name);
+//cout<<listlexeme.size()<<endl;      
 return 0;
 }
