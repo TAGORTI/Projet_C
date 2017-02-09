@@ -26,6 +26,7 @@ using namespace std;
 
 
 
+
 //////////////////////////////////////////// PROCESS BEGIN PROTOCOL /////////////////////////////////////
 bool process_begin_protocol (list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::iterator & lit, list<lexeme>::iterator & lend, list<lexeme>::iterator & previous_lexeme, tree<lexeme>::iterator & previous_branche, tree<lexeme>::iterator & current_branche, list<tree<lexeme>::iterator> & listroot, list<list<lexeme>::iterator> & listfilo, list<lexeme>::iterator & next_lexeme, string process_name){
 	bool error_bit=0;
@@ -270,7 +271,6 @@ bool archi_begin_process_protocol (list<lexeme> & l, tree<lexeme> & arbre, list<
 						goto sortie_erreur_protocol;
 					}
 				}
-
 
 /////// VARIABLE
 				else if ( ((*lit).getnature()).compare("variable")== 0) { //authorized lexeme
@@ -618,7 +618,7 @@ bool archi_begin_process_protocol (list<lexeme> & l, tree<lexeme> & arbre, list<
 								}
 							}
 
-							else if ( ((*lit).getnature()).compare("down")== 0){
+							else if ( ((*lit).getnature()).compare("downto")== 0){
 								if (((*previous_lexeme).getnature()).compare("chiffre")== 0){
 								++lit,++previous_lexeme,++next_lexeme;
 								}
@@ -649,7 +649,7 @@ bool archi_begin_process_protocol (list<lexeme> & l, tree<lexeme> & arbre, list<
 
 							else {
 								cout << "error at specified lexem"; 		
-								(*previous_lexeme).getposition();
+								(*lit).getposition();
 								error_bit=1;
 								goto sortie_erreur_protocol;
 							}
@@ -1107,14 +1107,49 @@ bool archi_begin_protocol (list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>:
 					}
 							
 				}
-				
+
+////////////////// assignation concurente	////////////////////////////////////////////////////////////////			
 				else if ( ((*lit).getnature()).compare("id")== 0 and ((*next_lexeme).getnature()).compare("assignation")== 0) { 
-						cout << "error: concurent affectation is not implemented"; 		
-						(*previous_lexeme).getposition();
+					if ((((*previous_lexeme).getnature()).compare("endligne")== 0) or (((*previous_lexeme).getnature()).compare("begin")== 0)){
+						if ( ((*lit).getnature()).compare("id")== 0 and ((*next_lexeme).getnature()).compare("assignation")== 0 and ((*(++next_lexeme)).getnature()).compare("id")== 0 and ((*(++next_lexeme)).getnature()).compare("endligne")== 0) {
+					
+							--next_lexeme; --next_lexeme;
+							//arbriser assignation
+		
+							current_branche=arbre.append_child(previous_branche, *lit);
+							previous_branche=current_branche;
+							++lit,++previous_lexeme,++next_lexeme;
+
+							current_branche=arbre.append_child(previous_branche, *lit);
+							previous_branche=current_branche;
+							++lit,++previous_lexeme,++next_lexeme;
+
+							current_branche=arbre.append_child(previous_branche, *lit);
+							previous_branche=current_branche;
+							++lit,++previous_lexeme,++next_lexeme;
+
+							++lit,++previous_lexeme,++next_lexeme;
+
+							previous_branche=*listroot.begin();
+							cout << "Concurrent assignation tree constructed"<< endl;
+						}
+						else {
+							cout << "error at specified lexem"; 		
+							(*lit).getposition();
+							error_bit=1;
+							goto sortie_erreur_archi_begin;
+						}
+					}
+					else {
+						cout << "error at specified lexem"; 		
+						(*lit).getposition();
 						error_bit=1;
-						goto sortie_erreur_archi_begin;		
+						goto sortie_erreur_archi_begin;
+					}
+				 	
 				}
 
+///////// instanciation
 				else if ( ((*lit).getnature()).compare("id")== 0 and ((*next_lexeme).getnature()).compare("deux_points")== 0 and ((*(++next_lexeme)).getnature()).compare("id")== 0) { 
 						cout << "error: explicit instanciation is not implemented"; 		
 						(*previous_lexeme).getposition();
@@ -1140,7 +1175,7 @@ bool archi_begin_protocol (list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>:
 					if (((*previous_lexeme).getnature()).compare("endligne")== 0){
 						++lit,++previous_lexeme,++next_lexeme;
 					}
-					else if (((*previous_lexeme).getnature()).compare("is")== 0){
+					else if (((*previous_lexeme).getnature()).compare("begin")== 0){
 						++lit,++previous_lexeme,++next_lexeme;
 					}
 					else {
@@ -1216,6 +1251,8 @@ void get_arbre_primaire( list<lexeme> & l, tree<lexeme> & arbre){
 
 /////////////////////////////////////////////////// RECURSIVE FUNCTION ////////////////////////////////////////
 void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::iterator & lit, list<lexeme>::iterator & lend, list<lexeme>::iterator & previous_lexeme, tree<lexeme>::iterator & previous_branche, tree<lexeme>::iterator & current_branche, list<tree<lexeme>::iterator> & listroot, list<list<lexeme>::iterator> & listfilo, list<lexeme>::iterator & next_lexeme){
+
+	string entity_name_global; // added to pass the test of entity name
 
 	for(;lit!=lend;){  // master  loop
 
@@ -1394,6 +1431,7 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::it
 			listfilo.push_front(lit); // save list position	
 			++lit,++previous_lexeme,++next_lexeme;
 			string entity_name=(*lit).getnom(); //Saving the name for checking
+			entity_name_global=entity_name;
 			int parenthese_count = 0;
 
 			for(;lit!=lend;){    // start verification loop
@@ -1422,7 +1460,7 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::it
 						}
 					}
 
-					else if ( ((*previous_lexeme).getnature()).compare("std_logic")== 0){ //authorized previous lexeme
+					else if (( ((*previous_lexeme).getnature()).compare("std_logic")== 0) or ( ((*previous_lexeme).getnature()).compare("bit")== 0)){ //authorized previous lexeme
 						++lit,++previous_lexeme,++next_lexeme; 
 					}
 
@@ -1505,7 +1543,7 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::it
 
 					else {
 						cout << "error at specified lexem";  // Debog code << "D";		
-						(*previous_lexeme).getposition();
+						(*lit).getposition();
 						goto sortie_erreur;
 					}			
 				}
@@ -1517,7 +1555,7 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::it
 					}
 					
 					
-					else if (((*previous_lexeme).getnature()).compare("std_logic_vector")== 0){
+					else if ((((*previous_lexeme).getnature()).compare("std_logic_vector")== 0) or (((*previous_lexeme).getnature()).compare("bit_vector")== 0)){
 						++lit,++previous_lexeme,++next_lexeme;++parenthese_count;
 					}					
 
@@ -1551,7 +1589,7 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::it
 					}		
 				}
 				
-				else if ( ((*lit).getnature()).compare("std_logic")== 0) { //authorized lexeme 
+				else if ( ((*lit).getnature()).compare("std_logic")== 0)  { //authorized lexeme 
 					if (((*previous_lexeme).getnature()).compare("in")== 0){
 						++lit,++previous_lexeme,++next_lexeme;
 					}
@@ -1574,9 +1612,35 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::it
 						(*previous_lexeme).getposition();
 						goto sortie_erreur;
 					}			
-				}				
+				}	
 
-				else if ( ((*lit).getnature()).compare("std_logic_vector")== 0) { //authorized lexeme 
+				else if ( ((*lit).getnom()).compare("bit")== 0) { //authorized lexeme 
+					if (((*previous_lexeme).getnature()).compare("in")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+					
+					else if (((*previous_lexeme).getnature()).compare("out")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}					
+					else if (((*previous_lexeme).getnature()).compare("inout")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+					
+					else if (((*previous_lexeme).getnature()).compare("buffer")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+					else if (((*previous_lexeme).getnature()).compare("linkage")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
+					else {
+						cout << "error at specified lexem"; 	
+						(*previous_lexeme).getposition();
+						goto sortie_erreur;
+					}			
+				}
+			
+
+				else if (( ((*lit).getnature()).compare("std_logic_vector")== 0) or ( ((*lit).getnature()).compare("bit_vector")== 0)) { //authorized lexeme 
 					if (((*previous_lexeme).getnature()).compare("in")== 0){
 						++lit,++previous_lexeme,++next_lexeme;
 					}
@@ -1739,10 +1803,13 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::it
 					if ((((*previous_lexeme).getnature()).compare("endligne")== 0) and ((((*next_lexeme).getnom()).compare(entity_name)== 0))){
 						++lit,++previous_lexeme,++next_lexeme;	
 					}
+					else if (((*previous_lexeme).getnature()).compare("is")== 0){
+						++lit,++previous_lexeme,++next_lexeme;
+					}
 
 					else {
 						cout << "error at specified lexem";  	
-						(*previous_lexeme).getposition();
+						(*lit).getposition();
 						goto sortie_erreur;
 					}			
 				}
@@ -1792,7 +1859,7 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::it
 					previous_branche=current_branche;
 					++lit,++previous_lexeme,++next_lexeme;
 					
-					if ( ((*lit).getnature()).compare("std_logic")== 0){
+					if (( ((*lit).getnature()).compare("std_logic")== 0) or ( ((*lit).getnature()).compare("bit")== 0)){
 						current_branche=arbre.append_child(previous_branche, *lit); 
 						previous_branche=*listroot.begin();
 						
@@ -1809,7 +1876,7 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::it
 						cout << "Port checked"<< endl;
 						
 					}
-					else if ( ((*lit).getnature()).compare("std_logic_vector")== 0){
+					else if (( ((*lit).getnature()).compare("std_logic_vector")== 0) or ( ((*lit).getnature()).compare("bit_vector")== 0)){
 						current_branche=arbre.append_child(previous_branche, *lit); 
 						previous_branche=current_branche;
 						++lit,++previous_lexeme,++next_lexeme;
@@ -1894,6 +1961,12 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::it
 
 			++next_lexeme;
 			string entity_name=(*next_lexeme).getnom();
+
+			if (entity_name_global.compare(entity_name)!= 0){
+				cout << "error : entity name not matching"; 		
+				(*next_lexeme).getposition();
+				goto sortie_erreur;
+			}
 			
 			current_branche=arbre.append_child(previous_branche, *next_lexeme); //Lexem is entity name
 			previous_branche=*listroot.begin();
@@ -1955,13 +2028,13 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::it
 							
 				}
 
-				else if ( ((*lit).getnature()).compare("signal")== 0) { //authorized lexeme
-						cout << "error: signal is not implemented"; 		
-						(*previous_lexeme).getposition();
-						error_bit=1;
-						goto sortie_erreur;	
+//				else if ( ((*lit).getnature()).compare("signal")== 0) { //authorized lexeme
+	//					cout << "error: signal is not implemented"; 		
+		//				(*previous_lexeme).getposition();
+			//			error_bit=1;
+				//		goto sortie_erreur;	
 							
-				}
+			//	}
 
 				else if ( ((*lit).getnature()).compare("component")== 0) { //authorized lexeme
 						cout << "error: component is not implemented"; 		
@@ -1997,11 +2070,349 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::it
 					}
 					else {
 						cout << "error at specified lexem"; 		
-						(*previous_lexeme).getposition();
+						(*lit).getposition();
+						goto sortie_erreur;
+					}			
+				}
+
+/////// SIGNAL
+				else if ( ((*lit).getnature()).compare("signal")== 0) { //authorized lexeme
+					if ((((*previous_lexeme).getnature()).compare("endligne")== 0) or (((*previous_lexeme).getnature()).compare("is")== 0)){
+
+						listfilo.push_front(lit);
+
+						++lit,++previous_lexeme,++next_lexeme;
+
+						for(;lit!=lend;){
+							if ( ((*lit).getnature()).compare("endligne")== 0){
+								if (((*next_lexeme).getnature()).compare("begin")== 0){//test EXIT
+								
+
+									lit=*listfilo.begin(); // return to saved list position
+									previous_lexeme=(--(lit));
+
+									++lit;
+									next_lexeme= (++(lit));
+									--lit;
+
+									listfilo.pop_front(); // delete used saved position
+									cout << "Variables checked"<< endl;
+									goto arbriser_signal; // exit loop
+								}
+								if (((*previous_lexeme).getnature()).compare("bit")== 0){
+								++lit,++previous_lexeme,++next_lexeme;
+								}
+
+								else if (((*previous_lexeme).getnature()).compare("parenthese_fermante")== 0){
+								++lit,++previous_lexeme,++next_lexeme;
+								}
+
+								else {
+									cout << "error at specified lexem"; 		
+									(*previous_lexeme).getposition();
+									goto sortie_erreur;
+								}
+							}
+							else if ( ((*lit).getnature()).compare("signal")== 0){
+								if (((*previous_lexeme).getnature()).compare("endligne")== 0){
+								++lit,++previous_lexeme,++next_lexeme;
+								}
+								else {
+									cout << "error at specified lexem"; 		
+									(*previous_lexeme).getposition();
+									goto sortie_erreur;
+								}
+							}
+
+							else if ( ((*lit).getnature()).compare("id")== 0){
+								if (((*previous_lexeme).getnature()).compare("signal")== 0){
+								++lit,++previous_lexeme,++next_lexeme;
+								}
+								else if (((*previous_lexeme).getnature()).compare("virgule")== 0){
+								++lit,++previous_lexeme,++next_lexeme;
+								}
+								else {
+									cout << "error at specified lexem"; 		
+									(*previous_lexeme).getposition();
+									goto sortie_erreur;
+								}
+							}
+							else if ( ((*lit).getnature()).compare("virgule")== 0){
+								if (((*previous_lexeme).getnature()).compare("id")== 0){
+								++lit,++previous_lexeme,++next_lexeme;
+								}
+								else {
+									cout << "error at specified lexem"; 		
+									(*previous_lexeme).getposition();
+									goto sortie_erreur;
+								}
+							}
+							else if ( ((*lit).getnature()).compare("deux_points")== 0){
+								if (((*previous_lexeme).getnature()).compare("id")== 0){
+								++lit,++previous_lexeme,++next_lexeme;
+								}
+								else {
+									cout << "error at specified lexem"; 		
+									(*previous_lexeme).getposition();
+									goto sortie_erreur;
+								}
+							}
+
+
+							else if ( ((*lit).getnature()).compare("bit")== 0){
+								if (((*previous_lexeme).getnature()).compare("deux_points")== 0){
+								++lit,++previous_lexeme,++next_lexeme;
+								}
+								else {
+									cout << "error at specified lexem"; 		
+									(*previous_lexeme).getposition();
+									goto sortie_erreur;
+								}
+							}
+
+							else if ( ((*lit).getnature()).compare("bit_vector")== 0){
+								if (((*previous_lexeme).getnature()).compare("deux_points")== 0){
+								++lit,++previous_lexeme,++next_lexeme;
+								}
+								else {
+									cout << "error at specified lexem"; 		
+									(*previous_lexeme).getposition();
+									goto sortie_erreur;
+								}
+							}
+
+
+
+
+							else if ( ((*lit).getnature()).compare("chiffre")== 0){
+
+								if (((*previous_lexeme).getnature()).compare("parenthese_ouvrante")== 0){
+								++lit,++previous_lexeme,++next_lexeme;
+								}
+								else if (((*previous_lexeme).getnature()).compare("to")== 0){
+								++lit,++previous_lexeme,++next_lexeme;
+								}
+								else if (((*previous_lexeme).getnature()).compare("downto")== 0){
+								++lit,++previous_lexeme,++next_lexeme;
+								}
+								else {
+									cout << "error at specified lexem"; 		
+									(*previous_lexeme).getposition();
+									goto sortie_erreur;
+								}
+							}
+							else if ( ((*lit).getnature()).compare("nombre")== 0){
+
+								if (((*previous_lexeme).getnature()).compare("parenthese_ouvrante")== 0){
+								++lit,++previous_lexeme,++next_lexeme;
+								}
+								else if (((*previous_lexeme).getnature()).compare("to")== 0){
+								++lit,++previous_lexeme,++next_lexeme;
+								}
+								else if (((*previous_lexeme).getnature()).compare("downto")== 0){
+								++lit,++previous_lexeme,++next_lexeme;
+								}
+
+								else {
+									cout << "error at specified lexem"; 		
+									(*previous_lexeme).getposition();
+									goto sortie_erreur;
+								}
+							}
+
+
+							else if ( ((*lit).getnature()).compare("parenthese_ouvrante")== 0){
+								if (((*previous_lexeme).getnature()).compare("bit_vector")== 0){
+								++lit,++previous_lexeme,++next_lexeme;
+								}
+
+								else {
+									cout << "error at specified lexem"; 		
+									(*previous_lexeme).getposition();
+									goto sortie_erreur;
+								}
+							}
+							else if ( ((*lit).getnature()).compare("parenthese_fermante")== 0){
+								if (((*previous_lexeme).getnature()).compare("chiffre")== 0){
+								++lit,++previous_lexeme,++next_lexeme;
+								}
+								else if (((*previous_lexeme).getnature()).compare("nombre")== 0){
+								++lit,++previous_lexeme,++next_lexeme;
+								}
+
+								else {
+									cout << "error at specified lexem"; 		
+									(*previous_lexeme).getposition();
+									goto sortie_erreur;
+								}
+							}
+							else if ( ((*lit).getnature()).compare("to")== 0){
+								if (((*previous_lexeme).getnature()).compare("chiffre")== 0){
+								++lit,++previous_lexeme,++next_lexeme;
+								}
+								else if (((*previous_lexeme).getnature()).compare("nombre")== 0){
+								++lit,++previous_lexeme,++next_lexeme;
+								}
+
+								else {
+									cout << "error at specified lexem"; 		
+									(*previous_lexeme).getposition();
+									goto sortie_erreur;
+								}
+							}
+
+							else if ( ((*lit).getnature()).compare("downto")== 0){
+								if (((*previous_lexeme).getnature()).compare("chiffre")== 0){
+								++lit,++previous_lexeme,++next_lexeme;
+								}
+								else if (((*previous_lexeme).getnature()).compare("nombre")== 0){
+								++lit,++previous_lexeme,++next_lexeme;
+								}
+
+								else {
+									cout << "error at specified lexem"; 		
+									(*previous_lexeme).getposition();
+									goto sortie_erreur;
+								}
+							}
+
+
+
+							else {
+								cout << "error at specified lexem"; 		
+								(*lit).getposition();
+								goto sortie_erreur;
+							}
+						} // END OF FIRST VERIFICATION LOOP
+
+					}
+									
+					else {
+						cout << "error at specified lexem"; 		
+						(*lit).getposition();
 						goto sortie_erreur;
 					}
-							
+				// END VERIFICATION
+
+					arbriser_signal:;
+
+
+
+					while ( ((*lit).getnature()).compare("begin")!= 0){
+						previous_branche=*listroot.begin(); //should be process
+
+						
+
+						++lit,++previous_lexeme,++next_lexeme;
+
+	
+						for(;lit!=lend;){
+							if (( ((*lit).getnature()).compare("id")== 0)   ){
+
+								while ( ((*previous_lexeme).getnature()).compare("signal")!= 0){
+									--previous_lexeme;
+								}
+
+								current_branche=arbre.append_child(previous_branche, *previous_lexeme); //Lexem should be variable				
+								previous_branche=current_branche;
+
+								listfilo.push_front(lit);
+	
+								current_branche=arbre.append_child(previous_branche, *lit); 
+								previous_branche=current_branche;
+	
+								while ( ((*lit).getnature()).compare("deux_points")!= 0){
+									++lit,++previous_lexeme,++next_lexeme;
+								}
+								++lit,++previous_lexeme,++next_lexeme;
+									
+//Type managed:  std_logic std_logic_vector time integer boolean bit string	
+		
+								if ( ((*lit).getnature()).compare("bit")== 0){
+									current_branche=arbre.append_child(previous_branche, *lit);
+									previous_branche=current_branche;
+									if ( ((*next_lexeme).getnature()).compare("endligne")== 0){
+										previous_branche=*listroot.begin();
+										lit=*listfilo.begin(); // return to saved list position
+										previous_lexeme=(--(lit));
+										++lit;
+										next_lexeme= (++(lit));
+										--lit;
+	
+										++lit,++previous_lexeme,++next_lexeme;
+										++lit,++previous_lexeme,++next_lexeme;
+										listfilo.pop_front(); // delete used saved position
+										cout << "Signal checked"<< endl;
+									}
+									else {
+										cout << "error at specified lexem"; 		
+										(*previous_lexeme).getposition();
+										goto sortie_erreur;
+									}
+
+								}
+								else if ( ((*lit).getnature()).compare("bit_vector")== 0){
+									current_branche=arbre.append_child(previous_branche, *lit);
+									previous_branche=current_branche;
+									++lit,++previous_lexeme,++next_lexeme;
+									++lit,++previous_lexeme,++next_lexeme;
+									current_branche=arbre.append_child(previous_branche, *lit);
+									previous_branche=current_branche;
+
+									++lit,++previous_lexeme,++next_lexeme;
+									current_branche=arbre.append_child(previous_branche, *lit);
+									previous_branche=current_branche;
+
+									++lit,++previous_lexeme,++next_lexeme;
+									current_branche=arbre.append_child(previous_branche, *lit);
+									previous_branche=current_branche;
+
+									previous_branche=*listroot.begin();
+									lit=*listfilo.begin(); // return to saved list position
+									previous_lexeme=(--(lit));
+									++lit;
+									next_lexeme= (++(lit));
+									--lit;
+	
+									++lit,++previous_lexeme,++next_lexeme;
+									++lit,++previous_lexeme,++next_lexeme;
+									++lit,++previous_lexeme,++next_lexeme;
+									listfilo.pop_front(); // delete used saved position
+									cout << "Signal checked"<< endl;
+
+								}
+
+								else {
+									cout << "error unknow data type at";	
+									(*previous_lexeme).getposition();
+									goto sortie_erreur;
+								}
+
+	
+							}
+							else if (( ((*lit).getnature()).compare("signal")== 0) or ( ((*lit).getnature()).compare("begin")== 0) ) {
+					
+								previous_branche=*listroot.begin(); //  return to saved tree position -> suposed to be process
+								break;
+							}
+					
+							else {
+								++lit,++previous_lexeme,++next_lexeme;
+							}
+	
+						} ///// END OF FOR
+						
+					}///// END OF WHILE
+
+					finsignal:;
+					cout << "Signal tree constructed"<< endl; 
+
+					//lit should be begin here
+
 				}
+
+////////////////////////END OF SIGNAL PROTOCOL //////////////////////////////////
+
 				else { //  unauthorized lexeme
 					cout << "error at specified lexem";	
 					(*lit).getposition();
@@ -2023,9 +2434,9 @@ void recursive_action ( list<lexeme> & l, tree<lexeme> & arbre, list<lexeme>::it
 
 
 		else { 
-			current_branche=arbre.insert_after(previous_branche, *lit);
-			previous_branche=current_branche;
-			++lit,++previous_lexeme,++next_lexeme;
+			cout << "error unknow data type at";	
+			(*lit).getposition();
+			goto sortie_erreur;
 		}
 		
 	
@@ -2042,5 +2453,6 @@ saut_erreur:;
 	// EXIT
 }
 ///////////////////////////////////// END OF RECURCIVE FUNCTION ///////////////////////////////////////////////
+
 
 
